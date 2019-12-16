@@ -1,0 +1,22 @@
+{
+  "name": "frameworks_fall_19_exam_marketplace",
+  "version": "0.0.1",
+  "description": "Exam project for the course Frameworks taken at BAAA fall 2019",
+  "scripts": {
+    "preinstall": "cd server && npm install",
+    "install": "cd client && npm install",
+    "build": "cd client && npm build",
+    "start": "cd server && npm start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wickoe/frameworks_fall_19_Exam_marketplace.git"
+  },
+  "author": "Wickoe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Wickoe/frameworks_fall_19_Exam_marketplace/issues"
+  },
+  "homepage": "https://github.com/Wickoe/frameworks_fall_19_Exam_marketplace#readme"
+}
