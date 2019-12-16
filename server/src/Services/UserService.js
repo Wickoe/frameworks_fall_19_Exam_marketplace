@@ -18,9 +18,15 @@ class UserService {
 
     validateInformation(userInformation) {
         //TODO - implement a more thorough user validation as the user schema evolves
-        const privateProfile = userInformation["privateProfile"];
+        try {
+            const username = userInformation["username"],
+                password = userInformation["password"],
+                admin = userInformation["admin"];
 
-        return privateProfile !== undefined && (privateProfile === false || privateProfile === true);
+            return username.length > 0 && password.length >= 8 && (admin === true || admin === false)
+        }catch (e) {
+            return false;
+        }
     }
 
     async createUser(userInformation) {
@@ -32,6 +38,7 @@ class UserService {
 
         try {
             await this.userDal.saveUser(userInformation);
+
             return {msg: "User created!"};
         } catch (e) {
             return {error: 1, msg: "An error happened while creating user account!"}

@@ -1,19 +1,20 @@
-const showNotification = (msg) => ({
+const showNotification = (msg, level) => ({
     type: 'DISPLAY_NOTIFICATION',
-    msg: msg
+    msg: msg,
+    level: level
 });
 
-const showNotificationAction = (msg, displayTimer) => async function(dispatch) {
-    dispatch(showNotification(msg));
+const showNotificationAction = (msg, level, displayTimer) => async function(dispatch) {
+    dispatch(showNotification(msg, level));
 
-    setTimeout(hideNotificationAction(), displayTimer)
+    setTimeout(_ => dispatch(hideNotificationAction()), displayTimer)
 };
 
 const hideNotification = _ => ({
     type: 'HIDE_NOTIFICATION'
 });
 
-const hideNotificationAction = _ => function (dispatch) {
+const hideNotificationAction = _ => async function (dispatch) {
     dispatch(hideNotification())
 };
 

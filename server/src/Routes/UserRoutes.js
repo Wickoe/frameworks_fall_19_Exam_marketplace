@@ -42,7 +42,7 @@ module.exports = (authService, userService) => {
         const authenticationResponse = await authService.authenticate(userCredentials);
 
         if(authenticationResponse["error"]) {
-            res.status(400);
+            return res.status(400);
         }
 
         return res.json(authenticationResponse);

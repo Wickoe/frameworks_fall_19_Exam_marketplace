@@ -5,11 +5,11 @@
   },
   {
     "url": "/api/users",
-    "method": "GET"
+    "method": "POST"
   },
   {
     "url": "/api/users/",
-    "method": "GET"
+    "method": "POST"
   },
   {
     "url": "/api/users/authenticate",
