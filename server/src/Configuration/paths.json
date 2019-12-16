@@ -1,0 +1,38 @@
+[
+  {
+    "url": "/",
+    "method": "GET"
+  },
+  {
+    "url": "/api/users",
+    "method": "GET"
+  },
+  {
+    "url": "/api/users/",
+    "method": "GET"
+  },
+  {
+    "url": "/api/users/authenticate",
+    "method": "POST"
+  },
+  {
+    "url": "/api/users/authenticate/",
+    "method": "POST"
+  },
+  {
+    "url": "/api/books/",
+    "method": "POST"
+  },
+  {
+    "url": "/api/books",
+    "method": "POST"
+  },
+  {
+    "url": "/api/categories/",
+    "method": "POST"
+  },
+  {
+    "url": "/api/categories",
+    "method": "POST"
+  }
+]
