@@ -1,4 +1,4 @@
-export function users(state = {username: undefined, token: undefined}, action) {
+export function user(state = {username: undefined, token: undefined}, action) {
     const newState = {...state};
 
     switch (action["type"]) {
@@ -11,6 +11,7 @@ export function users(state = {username: undefined, token: undefined}, action) {
         case 'UPDATE_USER':
             newState["username"] = action["username"];
             newState["token"] = action["token"];
+            newState["admin"] = action["admin"];
 
             return newState;
         default:

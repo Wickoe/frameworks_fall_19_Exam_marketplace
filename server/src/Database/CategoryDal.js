@@ -1,7 +1,7 @@
 class CategoryDal {
     constructor(categoryDal) {
         const categorySchema = categoryDal.Schema({
-            name: String,
+            title: String,
             description: String
         });
 
@@ -9,13 +9,11 @@ class CategoryDal {
     }
 
     async saveCategory(category) {
-        // TODO - implement functionality
-        throw Error("Missing implementation");
+        return this.categoryModel(category).save();
     }
 
     async getCategories() {
-        // TODO - implement functionality
-        throw Error("Missing implementation");
+        return this.categoryModel.find();
     }
 }
 

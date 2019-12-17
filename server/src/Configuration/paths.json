@@ -34,5 +34,13 @@
   {
     "url": "/api/categories",
     "method": "POST"
+  },
+  {
+    "url": "/api/books/",
+    "method": "POST"
+  },
+  {
+    "url": "/api/books",
+    "method": "POST"
   }
 ]

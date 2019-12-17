@@ -1,11 +1,13 @@
 import { combineReducers } from 'redux';
 
 import {categories} from "./CategoryReducers";
-import {users} from '../Reducers/UserReducers'
+import {user} from '../Reducers/UserReducers'
 import {notification} from "./NotificationReducers";
+import {books} from "./BookReducers";
 
 export default combineReducers({
     categories,
-    users,
-    notification
+    user,
+    notification,
+    books
 });

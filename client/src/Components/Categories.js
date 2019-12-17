@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {Link} from "@reach/router";
 
 export default class Categories extends Component {
    render() {
@@ -8,7 +9,7 @@ export default class Categories extends Component {
                <ul>
                    {
                        this.props.categories["categories"].map((category) => {
-                           return <li key={category["_id"]}>{`${category["title"]}`}</li>
+                           return <li key={category["_id"]}><Link to={`/categories/${category["title"]}`} onClick={this.props.loadCategoryBooks(`${category["_id"]}`)}>{`${category["title"]}`}</Link></li>
                        })
                    }
                </ul>

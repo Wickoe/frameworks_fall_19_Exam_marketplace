@@ -60,8 +60,6 @@ app.use('/api/categories', categoryRoutes);
 const bookRoutes = require('./src/Routes/BookRoutes')(bookService);
 app.use('/api/books', bookRoutes);
 
-const adminView = require('./src/Routes/AdminRoutes')();
-app.use('/admin', adminView);
 
 /* Resolves paths regarding the React app and its routes */
 const pathResolver = require('./src/Routes/PathResolver');

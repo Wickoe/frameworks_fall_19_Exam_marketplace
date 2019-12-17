@@ -58,10 +58,10 @@ class AuthenticationService {
             return this.errorOccurred("Invalid username or password!");
         }
 
-        const payload = {userId: user["_id"], username: username},
+        const payload = {userId: user["_id"], username: username, admin: user["admin"]},
             token = await this.tokenAlgorithm.sign(payload, this.secret, this.tokenExpirationLength);
 
-        return {msg: `User ${username} logged in!`, token: token};
+        return {msg: `User ${username} logged in!`, token: token, admin: user["admin"]};
     }
 }
 

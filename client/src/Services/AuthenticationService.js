@@ -6,7 +6,7 @@ export default class AuthenticationService {
     }
 
     async createAccount(userCredentials) {
-        if(!this.validUserCredentials(userCredentials)) {
+        if (!this.validUserCredentials(userCredentials)) {
             return {error: 1, msg: "Please enter an input for all required input fields!"}
         }
 
@@ -14,7 +14,7 @@ export default class AuthenticationService {
 
         const userCreationResponse = await this.fetcher.postUser(userCredentials);
 
-        if(userCreationResponse["error"]) {
+        if (userCreationResponse["error"]) {
             return {error: 1, msg: "An error occurred while trying to create user account. Please try again later!"}
         }
 
@@ -24,16 +24,13 @@ export default class AuthenticationService {
     async authenticateUser(userCredentials) {
         const userAuthResponse = await this.fetcher.authenticateUser(userCredentials);
 
-        const username = userCredentials["username"],
-            token = userAuthResponse["data"];
+        if (!userAuthResponse["error"]) {
+            this.setToken(userAuthResponse["token"]);
+            this.setUsername(userCredentials["username"]);
+            this.setAdmin(userAuthResponse["admin"]);
 
-        if(!userAuthResponse["error"]) {
-            this.setToken(token);
-            this.setUsername(username);
+            userAuthResponse["username"] = userCredentials["username"];
         }
-
-        userAuthResponse["username"] = username;
-        userAuthResponse["token"] = token;
 
         return userAuthResponse;
     }
@@ -48,6 +45,10 @@ export default class AuthenticationService {
             token = this.getToken();
 
         return username !== null && username.length > 0 && token !== null && token.length > 0
+    }
+
+    loadUserCredentials() {
+        return {username: this.getUsername(), token: this.getToken(), admin: Boolean(this.getAdmin())};
     }
 
     getToken() {
@@ -66,6 +67,14 @@ export default class AuthenticationService {
         localStorage.setItem("username", username);
     }
 
+    setAdmin(admin) {
+        localStorage.setItem("admin", admin);
+    }
+
+    getAdmin() {
+        return localStorage.getItem("admin");
+    }
+
     validUserCredentials(userCredentials) {
         try {
             const username = userCredentials["username"],
@@ -78,5 +87,9 @@ export default class AuthenticationService {
         } catch (e) {
             return false;
         }
+    }
+
+    authHeader() {
+        return {"bearer": this.getToken()};
     }
 }

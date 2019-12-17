@@ -8,13 +8,25 @@ module.exports = (bookService) => {
 
     /* Functionality */
     async function getCategories(req, res){
-        // TODO - implement functionality
-        throw Error("Missing implementation");
+        const categoriesResponse = await bookService.getCategories();
+
+        if(categoriesResponse["error"]) {
+            categoriesResponse["categories"] = [];
+        }
+
+        return res.json(categoriesResponse);
     }
 
     async function postCategory(req, res) {
-        // TODO - implement functionality
-        throw Error("Missing implementation");
+        const category = req.body;
+
+        const response = await bookService.saveCategory(category);
+
+        if(response["error"]) {
+            res.status(500);
+        }
+
+        return res.json(response);
     }
 
     return router;

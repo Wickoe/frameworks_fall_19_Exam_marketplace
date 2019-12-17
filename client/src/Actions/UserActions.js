@@ -8,10 +8,11 @@ const userService = new UserService();
 const authService = new AuthenticationService();
 
 /* Actions */
-const updateUser = (username, token) => ({
+const updateUser = (username, token, admin) => ({
     type: "UPDATE_USER",
     username: username,
-    token: token
+    token: token,
+    admin: admin
 });
 
 const createUserAction = (userCredentials) => async function (dispatch) {
@@ -28,28 +29,31 @@ const createUserAction = (userCredentials) => async function (dispatch) {
     setTimeout(navigate("/"), displayTimer);
 };
 
-const loginUserAction = (userCredentials) => async function(dispatch) {
+const loginUserAction = (userCredentials) => async function (dispatch) {
     const displayTimer = (process.env.REACT_DISPLAY_NOTIFICATION_TIMER || 2000);
 
     const userLoginResponse = await authService.authenticateUser(userCredentials);
 
-    if(userLoginResponse["error"]) {
+    if (userLoginResponse["error"]) {
         dispatch(showNotificationAction(userLoginResponse["msg"], 2, displayTimer));
         return;
     }
 
     const msg = userLoginResponse["msg"],
         username = userLoginResponse["username"],
-        token = userLoginResponse["token"];
+        token = userLoginResponse["token"],
+        admin = userLoginResponse["admin"];
 
     dispatch(showNotificationAction(msg, 1, displayTimer));
-    dispatch(updateUser(username, token));
-    setTimeout(navigate("/"), displayTimer);
+    dispatch(updateUser(username, token, admin));
+
+    setTimeout(navigate(`/user/${username}`), displayTimer);
 };
 
 const logoutUserAction = _ => function (dispatch) {
     const displayTimer = (process.env.REACT_DISPLAY_NOTIFICATION_TIMER || 2000);
 
+    // TODO - change structure
     const logoutResponse = authService.logoutUser();
 
     dispatch(showNotificationAction("User logged out!", 1, displayTimer));
@@ -57,5 +61,13 @@ const logoutUserAction = _ => function (dispatch) {
     setTimeout(navigate("/"), displayTimer);
 };
 
+const loadUserCredentials = _ => function (dispatch) {
+    const userCredentials = authService.loadUserCredentials();
+
+    console.log(userCredentials["admin"])
+
+    dispatch(updateUser(userCredentials["username"], userCredentials["token"], userCredentials["admin"]));
+};
+
 /* Export */
-export {createUserAction, loginUserAction, logoutUserAction}
+export {createUserAction, loginUserAction, logoutUserAction, loadUserCredentials}

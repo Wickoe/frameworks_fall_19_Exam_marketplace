@@ -40,6 +40,30 @@ class BookService {
             return {msg: `An error occurred while loading ${bookId}!`, error: 1, data: {}}
         }
     }
+
+    async saveCategory(category) {
+        if(!this.validCategoryInformation(category)) {
+            return {error: 1, msg: "Received invalid or missing data!"};
+        }
+
+        try {
+            return {data: await this.categoryDal.saveCategory(category), msg: `Category ${category["title"]} created!`};
+        }catch (e) {
+            return {error: 1, msg: "An error happened while creating the category. Please try again later!"}
+        }
+    }
+
+    validCategoryInformation(category) {
+        try {
+            return category["title"] !== undefined && category["title"].length > 0;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    async getCategories() {
+        return {categories: await this.categoryDal.getCategories()}
+    }
 }
 
 module.exports = (bookDal, categoryDal) => new BookService(bookDal, categoryDal);
