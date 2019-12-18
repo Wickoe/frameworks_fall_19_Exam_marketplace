@@ -2,6 +2,8 @@
 import BookService from "../Services/BookService";
 import {showNotificationAction} from "./NotificationActions";
 
+const {navigate} = require("@reach/router/lib/history");
+
 const bookService = new BookService();
 
 /* Actions */
@@ -10,12 +12,12 @@ const updateCategory = category => ({
     category: category
 });
 
-const postCategory = category => async function(dispatch) {
+const postCategory = category => async function (dispatch) {
     const displayTimer = 2000;
     const categoryCreationResponse = await bookService.postCategory(category);
 
 
-    if(categoryCreationResponse["error"]) {
+    if (categoryCreationResponse["error"]) {
         dispatch(showNotificationAction(categoryCreationResponse["msg"], 2, displayTimer));
         return;
     }
@@ -29,13 +31,13 @@ const updateCategories = categories => ({
     categories: categories
 });
 
-const loadCategories = _ => async function(dispatch) {
+const loadCategories = _ => async function (dispatch) {
     const displayTimer = 2000;
     const fetchCategoriesResponse = await bookService.loadCategories();
 
     dispatch(showNotificationAction(fetchCategoriesResponse["msg"], 1, displayTimer));
 
-    if(fetchCategoriesResponse["error"]) {
+    if (fetchCategoriesResponse["error"]) {
         dispatch(updateCategories([]));
         return;
     }
@@ -48,11 +50,70 @@ const updateBooks = books => ({
     books: books
 });
 
-const loadCategoryBooks = categoryId => async function(dispatch) {
-    const displayTimer = 2000;
+const updateCategoryBooks = books => ({
+    type: 'UPDATE_CATEGORY_BOOKS',
+    books: books
+});
 
-    const loadBookResponse = await bookService.loadCategoryBooks(categoryId);
-    dispatch(updateBooks(loadBookResponse["books"]));
+const loadCategoryBooks = (category, books) => async function (dispatch) {
+    const displayTimer = 2000;
+    let categoryBooks = [];
+
+    try {
+        const categoryId = await bookService.getCategoryId(category);
+
+        categoryBooks = books.filter(book =>
+            book["category"] === categoryId
+        );
+
+        if (categoryBooks.length <= 0) {
+            categoryBooks = await bookService.loadCategoryBooks(categoryId)
+        }
+    } catch (e) {
+        dispatch(showNotificationAction("Invalid category!", 2, displayTimer))
+    }
+
+    dispatch(updateBooks(categoryBooks));
+    dispatch(updateCategoryBooks(categoryBooks));
 };
 
-export {postCategory, loadCategories, loadCategoryBooks}
+const postBook = book => async function (dispatch) {
+    const displayTimer = 2000;
+
+    const postBookResponse = await bookService.postBook(book);
+
+    // TODO
+    if (!postBookResponse["error"]) {
+        dispatch(updateBooks([postBookResponse["data"]]));
+    }
+
+    dispatch(showNotificationAction(postBookResponse["msg"], 1, displayTimer));
+};
+
+const loadBook = (bookId, books) => async function (dispatch) {
+    let book = books.find(book => book["_id"] === bookId);
+
+    if (book === undefined) {
+        const loadBookResponse = await bookService.loadBook(bookId);
+
+        if (!loadBookResponse["error"]) {
+            book = loadBookResponse["book"];
+        }
+    }
+
+    const bookExists = await bookService.bookExists(book);
+
+    if (bookExists) {
+        return dispatch(updateBook(book));
+    }
+
+    dispatch(showNotificationAction("Book does not exists!"));
+    return navigate('/');
+};
+
+const updateBook = book => ({
+    type: 'UPDATE_BOOK',
+    book: book
+});
+
+export {postCategory, loadCategories, loadCategoryBooks, postBook, loadBook}

@@ -10,8 +10,6 @@ export default class Admin extends Component {
     }
 
     render() {
-        console.log(this.props["categories"]);
-
         return (
             <div>
                 <div>

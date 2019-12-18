@@ -64,8 +64,6 @@ const logoutUserAction = _ => function (dispatch) {
 const loadUserCredentials = _ => function (dispatch) {
     const userCredentials = authService.loadUserCredentials();
 
-    console.log(userCredentials["admin"])
-
     dispatch(updateUser(userCredentials["username"], userCredentials["token"], userCredentials["admin"]));
 };
 

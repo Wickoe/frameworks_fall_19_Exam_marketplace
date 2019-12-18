@@ -16,13 +16,17 @@ class BookDal {
     }
 
     async getBook(id) {
-        // TODO - implement functionality
-        throw Error("Missing implementation");
+        return this.bookModel.findOne({_id: id});
     }
 
     async saveBook(book) {
-        // TODO - implement functionality
-        throw Error("Missing implementation");
+        const bookModel = this.bookModel(book);
+
+        return bookModel.save();
+    }
+
+    async getCategoryBooks(categoryId) {
+        return this.bookModel.find({category: categoryId});
     }
 }
 

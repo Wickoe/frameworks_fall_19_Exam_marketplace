@@ -42,5 +42,13 @@
   {
     "url": "/api/books",
     "method": "POST"
+  },
+  {
+    "url": "/api/categories/categoryId",
+    "method": "POST"
+  },
+  {
+    "url": "/api/categories/categoryId/",
+    "method": "POST"
   }
 ]

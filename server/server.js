@@ -38,6 +38,14 @@ const openPaths = [...require('./src/Configuration/paths.json'),
     {
         "url": /\/api\/books\/[\w]+\//ig,
         "method": "GET"
+    },
+    {
+        "url": /\/api\/categories\/[\w]+\/books/ig,
+        "method": "GET"
+    },
+    {
+        "url": /\/api\/categories\/[\w]+\/books\//ig,
+        "method": "GET"
     }
 ];
 

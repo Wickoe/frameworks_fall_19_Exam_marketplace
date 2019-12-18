@@ -5,27 +5,33 @@ class BookService {
     }
 
     async postBook(book) {
-        if(!this.validateBookInformation(book)) {
+        const validBookInformation = await this.validateBookInformation(book);
+
+        if(!validBookInformation) {
             return {msg: "Missing information", error: 1, data: {}};
         }
 
-        try {
-            const book = await this.bookDal.saveBook(book);
+        book["category"] = (await this.categoryDal.getCategory(book["category"]))["_id"];
 
-            return {msg: "Book created!", data: book};
+        try {
+            const savedBook = await this.bookDal.saveBook(book);
+
+            return {msg: "Book created!", data: savedBook};
         }catch (e) {
             return {msg: "Please try again later!", error: 2, data: {}}
         }
     }
 
-    validateBookInformation(book) {
+    async validateBookInformation(book) {
         try {
             const title = book["title"],
                 author = book["author"],
-                category = book["category"],
+                bookCategory = book["category"],
                 price = book["price"];
 
-            return title.length > 0 && author.length > 0 && category.length > 0 && price > 0.0;
+            const category = await this.categoryDal.getCategory(bookCategory);
+
+            return title.length > 0 && author.length > 0 && category !== undefined && price > 0.0;
         } catch(e) {
             return false;
         }
@@ -63,6 +69,20 @@ class BookService {
 
     async getCategories() {
         return {categories: await this.categoryDal.getCategories()}
+    }
+
+    async getCategoryBooks(categoryId) {
+        return await this.bookDal.getCategoryBooks(categoryId);
+    }
+
+    async getCategoryId(category) {
+        const foundCategory = await this.categoryDal.getCategoryId(category["category"]);
+
+        if(foundCategory === null) {
+            return {error: 1, msg: "Category does not exists!"}
+        }
+
+        return foundCategory["_id"];
     }
 }
 
