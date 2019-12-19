@@ -69,7 +69,8 @@ const openPaths = [...require('./src/Configuration/paths.json'),
     {
         "url": /\/api\/users\/[\w]+\/username\/[w]+\//ig,
         "method": "GET"
-    }
+    },
+    /^(?!\/api).*/gim,
 ];
 
 /* Server configuration */
@@ -111,9 +112,9 @@ app.put('/api/categories/:id', tokenValidator({secret: securitySecret}), async f
 const bookRoutes = require('./src/Routes/BookRoutes')(bookService);
 app.use('/api/books', tokenValidator({secret: securitySecret}).unless({path: openPaths}), bookRoutes);
 
-app.get('*', (req, res) => {
-    res.sendFile(path.resolve('..', 'client', 'build', 'index.html'));
-});
+app.get('*', (req, res) =>
+    res.sendFile(path.resolve('..', 'client', 'build', 'index.html'))
+);
 
 /* Server startup */
 database.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true})
