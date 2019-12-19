@@ -22,8 +22,9 @@ module.exports = (bookService) => {
 
     async function postBook(req, res) {
         const newBook = req.body;
+        const user = req.user.userId;
 
-        const postBookResponse = await bookService.postBook(newBook);
+        const postBookResponse = await bookService.postBook(newBook, user);
 
         const responseError = postBookResponse["error"];
 

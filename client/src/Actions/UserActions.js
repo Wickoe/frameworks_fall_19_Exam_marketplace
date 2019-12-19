@@ -35,8 +35,7 @@ const loginUserAction = (userCredentials) => async function (dispatch) {
     const userLoginResponse = await authService.authenticateUser(userCredentials);
 
     if (userLoginResponse["error"]) {
-        dispatch(showNotificationAction(userLoginResponse["msg"], 2, displayTimer));
-        return;
+        return dispatch(showNotificationAction(userLoginResponse["msg"], 2, displayTimer));
     }
 
     const msg = userLoginResponse["msg"],

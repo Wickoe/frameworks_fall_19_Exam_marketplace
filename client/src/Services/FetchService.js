@@ -110,6 +110,21 @@ export default class FetchService {
         return webResponse["data"];
     }
 
+    async getCategory(categoryId) {
+        const categoryApi = (process.env.REACT_CATEGORY_API || 'http://localhost:8080/api/categories');
+
+        const webResponse = await this.fetch(categoryApi, categoryId);
+
+        if(webResponse["error"]) {
+            return {msg: webResponse["msg"], error: webResponse["error"], category: {}};
+        }
+
+        webResponse["category"] = webResponse["data"]["data"];
+        delete webResponse["data"];
+
+        return webResponse;
+    }
+
     async bookExists(book) {
         const bookApi = (process.env.REACT_BOOK_API || 'http://localhost:8080/api/books');
         const pathArgument = `${book["_id"]}`;
@@ -132,5 +147,28 @@ export default class FetchService {
         delete webResponse["data"];
 
         return webResponse;
+    }
+
+    async getSeller(sellerId) {
+        const userApi = (process.env.REACT_USERS_API || 'http://localhost:8080/api/users');
+
+        const webResponse = await this.fetch(userApi, sellerId);
+
+        webResponse["seller"] =  webResponse["data"]["data"];
+        delete webResponse["data"];
+
+        return webResponse;
+    }
+
+    async removeCategory(categoryId) {
+        const categoryApi = (process.env.REACT_CATEGORY_API || 'http://localhost:8080/api/categories');
+
+        const authHeader = (new AuthenticationService()).authHeader();
+
+        try {
+            return await this.fetch(categoryApi, categoryId, 'DELETE', {}, authHeader);
+        } catch (e) {
+            return {msg: e.message, error: 1}
+        }
     }
 }

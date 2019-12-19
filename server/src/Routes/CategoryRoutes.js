@@ -12,6 +12,9 @@ module.exports = (bookService) => {
     router.route('/categoryId')
         .post((req, res) => getCategoryId(req, res));
 
+    router.route('/:id')
+        .get((req, res) => getCategory(req, res));
+
     /* Functionality */
     async function getCategories(req, res) {
         const categoriesResponse = await bookService.getCategories();
@@ -51,6 +54,14 @@ module.exports = (bookService) => {
         }
 
         return res.json({msg: "Category id", data: categoryIdResponse})
+    }
+
+    async function getCategory(req, res) {
+        const categoryId = req.params.id;
+
+        const categoryResponse = await bookService.getCategory(categoryId);
+
+        return res.json(categoryResponse);
     }
 
     return router;

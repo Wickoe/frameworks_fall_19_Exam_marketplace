@@ -1,4 +1,4 @@
-export function books(state = {books: [], categoryBooks: [], book: {}}, action) {
+export function books(state = {books: [], categoryBooks: [], book: {}, bookCategory: {}, bookSeller: {}}, action ) {
     const newState = {...state};
 
     switch (action["type"]) {
@@ -30,6 +30,11 @@ export function books(state = {books: [], categoryBooks: [], book: {}}, action) 
             return newState;
         case 'UPDATE_CATEGORY_BOOKS':
             newState["categoryBooks"] = action["books"];
+
+            return newState;
+        case 'UPDATE_SELLING_BOOK':
+            newState["bookSeller"] = action["seller"];
+            newState["bookCategory"] = action["category"];
 
             return newState;
         default:

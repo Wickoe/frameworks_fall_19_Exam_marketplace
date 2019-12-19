@@ -98,4 +98,32 @@ export default class BookService {
     async loadBook(bookId) {
         return await this.fetcher.getBook(bookId);
     }
+
+    async getSeller(sellerId) {
+        const sellerResponse = await this.fetcher.getSeller(sellerId);
+
+        if(sellerResponse["error"]){
+            return;
+        }
+
+        return sellerResponse["seller"];
+    }
+
+    async getBookCategory(categoryId) {
+        const categoryResponse = await this.fetcher.getCategory(categoryId);
+
+        return categoryResponse["category"];
+    }
+
+    async removeCategory(category) {
+        if(this.isDefaultCategory(category)) {
+            return {msg: `You cannot remove '${category["title"]}'!`, error: 1};
+        }
+
+        return await this.fetcher.removeCategory(category["_id"]);
+    }
+
+    isDefaultCategory(category) {
+        return category["title"] === (process.env.REACT_DEFAULT_CATEGORY || "Default");
+    }
 }

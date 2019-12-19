@@ -46,6 +46,22 @@ const openPaths = [...require('./src/Configuration/paths.json'),
     {
         "url": /\/api\/categories\/[\w]+\/books\//ig,
         "method": "GET"
+    },
+    {
+        "url": /\/api\/categories\/[\w]+/ig,
+        "method": "GET"
+    },
+    {
+        "url": /\/api\/categories\/[\w]+\//ig,
+        "method": "GET"
+    },
+    {
+        "url": /\/api\/users\/[\w]+/ig,
+        "method": "GET"
+    },
+    {
+        "url": /\/api\/users\/[\w]+\//ig,
+        "method": "GET"
     }
 ];
 
@@ -63,11 +79,24 @@ const userPaths = require('./src/Routes/UserRoutes')(authService, userService);
 app.use('/api/users', userPaths);
 
 const categoryRoutes = require('./src/Routes/CategoryRoutes')(bookService);
-app.use('/api/categories', categoryRoutes);
+app.use('/api/categories', tokenValidator({secret: securitySecret}).unless({path: openPaths}), categoryRoutes);
+
+app.delete('/api/categories/:id', tokenValidator({secret: securitySecret}), async function deleteCategory(req, res) {
+    if(!req.user["admin"]) {
+        res.status(401).json({msg: `User is unauthorized!`, error: 1});
+    }
+
+    const categoryId = req.params["id"];
+
+    const removeCategoryResponse = await bookService.removeCategory(categoryId);
+
+    return res.json(removeCategoryResponse);
+});
+
+
 
 const bookRoutes = require('./src/Routes/BookRoutes')(bookService);
-app.use('/api/books', bookRoutes);
-
+app.use('/api/books', tokenValidator({secret: securitySecret}).unless({path: openPaths}), bookRoutes);
 
 /* Resolves paths regarding the React app and its routes */
 const pathResolver = require('./src/Routes/PathResolver');

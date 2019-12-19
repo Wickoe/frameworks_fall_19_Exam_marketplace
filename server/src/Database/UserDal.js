@@ -3,7 +3,9 @@ class UserDal {
         const userSchema = new database.Schema({
             username: String,
             password: String,
-            admin: Boolean
+            admin: Boolean,
+            email: String,
+            name: String
         });
 
         this.userModel = database.model('User', userSchema);
@@ -24,7 +26,7 @@ class UserDal {
     }
 
     async getUser(id) {
-        return this.userModel.findOne({_id: id});
+        return this.userModel.findOne({_id: id}).select("-password");
     }
 }
 

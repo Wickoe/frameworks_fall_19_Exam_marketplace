@@ -1,9 +1,16 @@
 import React, {Component} from 'react';
-import {Link, Router} from "@reach/router";
+import {Link, Redirect, Router} from "@reach/router";
 import {connect} from 'react-redux'
 
 import {createUserAction, loginUserAction, logoutUserAction, loadUserCredentials} from "./Actions/UserActions";
-import {loadCategories, loadCategoryBooks, postCategory, postBook, loadBook} from "./Actions/BookActions";
+import {
+    loadCategories,
+    loadCategoryBooks,
+    postCategory,
+    postBook,
+    loadBook,
+    removeCategoryAction
+} from "./Actions/BookActions";
 
 import Categories from "./Components/Categories";
 import PostBook from "./Components/PostBook";
@@ -55,6 +62,8 @@ class App extends Component {
                     }
                 </div>
                 <Router>
+
+
                     <Categories path={"/"} categories={this.props.categories}
                                 loadCategoryBooks={(categoryId) => this.props.loadCategoryBooks(categoryId, this.props["books"]["books"])}/>
 
@@ -63,10 +72,9 @@ class App extends Component {
                               loadCategoryBooks={(category) => this.props.loadCategoryBooks(category, this.props["books"]["books"])}/>
 
                     <Book path={"/books/:bookId"} book={this.props["books"]["book"]}
-                          loadBook={(bookId) => this.props.loadBook(bookId, this.props["books"]["books"])}/>
-
-                    <PostBook path={"/post-book-for-sale"} categories={this.props["categories"]["categories"]}
-                              postBook={(book) => this.props.postBook(book)}/>
+                          loadBook={(bookId) => this.props.loadBook(bookId, this.props["books"]["books"])}
+                          seller={this.props["books"]["bookSeller"]}
+                          category={this.props["books"]["bookCategory"]}/>
 
                     <SignIn path={"/sign-in"} loginUser={(userCredentials) => this.props.loginUser(userCredentials)}/>
 
@@ -74,8 +82,20 @@ class App extends Component {
 
                     <User path={"/user/:username"} user={this.props["user"]}/>
 
-                    <Admin path={"/admin"} categories={this.props["categories"]["categories"]}
-                           postCategory={(category) => this.props.postCategory(category)}/>
+                    {this.authService.authenticatedUser() ?
+                        <PostBook path={"/post-book-for-sale"} categories={this.props["categories"]["categories"]}
+                                  postBook={(book) => this.props.postBook(book)}/>
+                        :
+                        <Redirect noThrow from={"/post-book-for-sale"} to={"/sign-in"}/>
+                    }
+
+                    {this.authService.authenticatedUser() && this.authService.authenticatedUserIsAdmin() ?
+                        <Admin path={"/admin"} categories={this.props["categories"]["categories"]}
+                               postCategory={(category) => this.props.postCategory(category)}
+                        removeCategory={(category) => this.props.removeCategory(category)}/>
+                        :
+                        <Redirect noThrow from={"/admin"} to={"/"}/>
+                    }
                 </Router>
             </React.Fragment>
         )
@@ -98,7 +118,8 @@ const mapDispatchToProps = dispatch => ({
     loadCategories: _ => dispatch(loadCategories()),
     loadCategoryBooks: (category, books) => dispatch(loadCategoryBooks(category, books)),
     postBook: book => dispatch(postBook(book)),
-    loadBook: (bookId, books) => dispatch(loadBook(bookId, books))
+    loadBook: (bookId, books) => dispatch(loadBook(bookId, books)),
+    removeCategory: (category) => dispatch(removeCategoryAction(category))
 });
 
 export default connect(

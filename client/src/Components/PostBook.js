@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import AuthenticationService from "../Services/AuthenticationService";
+import SignIn from "./SignIn";
 
 export default class PostBook extends Component {
     constructor(props) {
@@ -9,32 +11,38 @@ export default class PostBook extends Component {
             author: "",
             category: "",
             price: 0.0
-        }
+        };
     }
 
     render() {
         return (
             <div>
-                <h1>Post a book to sell</h1>
-                <form>
-                    <label>Title:<input type={"text"} name={"title"}
-                                        onChange={(event) => this.onValueInputChange(event)}/></label>
-                    <label>Author:<input type={"text"} name={"author"}
-                                         onChange={(event) => this.onValueInputChange(event)}/></label>
-                    <label>Price:<input type={"number"} name={"price"}
-                                        onChange={(event) => this.onValueInputChange(event)}/></label>
-                    <label>Category:
-                        <select defaultValue={0} name={"category"} onChange={(event) => this.onValueInputChange(event)}>
-                            <option hidden>Book category</option>
-                            {this.props["categories"].map((category) => {
-                                return (
-                                    <option key={category["_id"]}>{category["title"]}</option>
-                                )
-                            })}
-                        </select>
-                    </label>
-                    <input type={"submit"} onClick={(event) => this.onSubmitInputClicked(event)} value={"Submit"}/>
-                </form>
+                {(new AuthenticationService()).authenticatedUser() ?
+                    <div>
+                        <h1>Post a book to sell</h1>
+                        <form>
+                            <label>Title:<input type={"text"} name={"title"}
+                                                onChange={(event) => this.onValueInputChange(event)}/></label>
+                            <label>Author:<input type={"text"} name={"author"}
+                                                 onChange={(event) => this.onValueInputChange(event)}/></label>
+                            <label>Price:<input type={"number"} name={"price"}
+                                                onChange={(event) => this.onValueInputChange(event)}/></label>
+                            <label>Category:
+                                <select defaultValue={0} name={"category"} onChange={(event) => this.onValueInputChange(event)}>
+                                    <option hidden>Book category</option>
+                                    {this.props["categories"].map((category) => {
+                                        return (
+                                            <option key={category["_id"]}>{category["title"]}</option>
+                                        )
+                                    })}
+                                </select>
+                            </label>
+                            <input type={"submit"} onClick={(event) => this.onSubmitInputClicked(event)} value={"Submit"}/>
+                        </form>
+                    </div>
+                    :
+                    <SignIn loginUser={(userCredentials) => this.props.loginUser(userCredentials)}/>
+                }
             </div>
         )
     }

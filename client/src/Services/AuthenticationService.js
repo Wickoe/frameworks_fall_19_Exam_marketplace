@@ -90,6 +90,22 @@ export default class AuthenticationService {
     }
 
     authHeader() {
-        return {"bearer": this.getToken()};
+        return {"Authorization": `Bearer ${this.getToken()}`};
+    }
+
+    authenticatedUserIsAdmin() {
+        try {
+            const admin = this.getAdmin();
+
+            if(admin === "false") {
+                return false
+            } else {
+                return true;
+            }
+
+            // return Boolean(this.getAdmin());
+        } catch (e) {
+            return false;
+        }
     }
 }

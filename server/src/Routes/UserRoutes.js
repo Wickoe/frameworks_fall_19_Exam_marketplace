@@ -9,6 +9,9 @@ module.exports = (authService, userService) => {
     router.route('/authenticate')
         .post((req, res) => authenticateUser(req, res));
 
+    router.route('/:id')
+        .get((req, res) => getUser(req, res));
+
     /** Functionality **/
     async function getUsers(req, res) {
         const usersResponse = await userService.getUsers();
@@ -32,18 +35,20 @@ module.exports = (authService, userService) => {
         return res.json(await userService.createUser(encryptedUserAccount));
     }
 
+    async function getUser(req, res) {
+        const userId = req.params.id;
+
+        return res.json({msg: `User ${userId}`, data: (await userService.getUser(userId))})
+    }
+
     async function authenticateUser(req, res) {
         const userCredentials = req.body;
 
         if (!userCredentials["username"] || !userCredentials["password"]) {
-            return res.status(400).json({error: 1, msg: "Invalid username or password!"});
+            return res.status(401).json({error: 1, msg: "Invalid username or password!"});
         }
 
         const authenticationResponse = await authService.authenticate(userCredentials);
-
-        if(authenticationResponse["error"]) {
-            return res.status(400);
-        }
 
         return res.json(authenticationResponse);
     }

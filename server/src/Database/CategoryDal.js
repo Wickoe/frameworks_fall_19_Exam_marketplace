@@ -17,7 +17,15 @@ class CategoryDal {
     }
 
     async getCategory(category) {
-        return this.categoryModel.findOne({title: category});
+        return this.categoryModel.findOne({_id: category});
+    }
+
+    async getCategoryByName(categoryTitle) {
+        return this.categoryModel.findOne({title: categoryTitle});
+    }
+
+    async getCategoryById(categoryId) {
+        return this.categoryModel.findOne({_id: categoryId});
     }
 
     async getCategoryId(category) {
@@ -28,6 +36,20 @@ class CategoryDal {
         }
 
         return foundCategory
+    }
+
+    async getDefaultCategory() {
+        const defaultCategory = await this.categoryModel.findOne({title: "Default"});
+
+        if(!defaultCategory) {
+            return await this.saveCategory({title: "Default"});
+        }
+
+        return defaultCategory;
+    }
+
+    async removeCategory(categoryId) {
+        return this.categoryModel.deleteOne({_id: categoryId});
     }
 }
 

@@ -26,6 +26,24 @@ const postCategory = category => async function (dispatch) {
     dispatch(updateCategory(categoryCreationResponse["category"]));
 };
 
+const removeCategory = category => ({
+    type: 'REMOVE_CATEGORY',
+    category: category
+});
+
+const removeCategoryAction = category => async function(dispatch) {
+    const displayTimer = 2000;
+
+    const removeCategoryResponse = await bookService.removeCategory(category);
+
+    if(removeCategoryResponse["error"]) {
+        return dispatch(showNotificationAction(removeCategoryResponse["msg"], 2, displayTimer));
+    }
+
+    dispatch(removeCategory(category));
+    dispatch(showNotificationAction(removeCategoryResponse["msg"], 1, displayTimer));
+};
+
 const updateCategories = categories => ({
     type: 'UPDATE_CATEGORIES',
     categories: categories
@@ -104,6 +122,11 @@ const loadBook = (bookId, books) => async function (dispatch) {
     const bookExists = await bookService.bookExists(book);
 
     if (bookExists) {
+        const seller = await bookService.getSeller(book["seller"]);
+        const bookCategory = await bookService.getBookCategory(book["category"]);
+
+        dispatch(updateBookSeller(seller, bookCategory));
+
         return dispatch(updateBook(book));
     }
 
@@ -111,9 +134,15 @@ const loadBook = (bookId, books) => async function (dispatch) {
     return navigate('/');
 };
 
+const updateBookSeller = (seller, category) => ({
+    type: 'UPDATE_SELLING_BOOK',
+    seller: seller,
+    category: category
+});
+
 const updateBook = book => ({
     type: 'UPDATE_BOOK',
     book: book
 });
 
-export {postCategory, loadCategories, loadCategoryBooks, postBook, loadBook}
+export {postCategory, loadCategories, loadCategoryBooks, postBook, loadBook, removeCategoryAction}

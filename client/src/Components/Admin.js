@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import AuthenticationService from "../Services/AuthenticationService";
+import SignIn from "./SignIn";
 
 export default class Admin extends Component {
     constructor(props) {
@@ -6,7 +8,9 @@ export default class Admin extends Component {
 
         this.state = ({
             categoryTitle: ""
-        })
+        });
+
+        this.authService = new AuthenticationService();
     }
 
     render() {
@@ -27,6 +31,9 @@ export default class Admin extends Component {
                         return <li key={category["_id"]}>
                             <div>
                                 <label>{category["title"]}</label>
+                                <button onClick={(event) => this.onDeleteCategoryClicked(event, category)}>Remove
+                                    category
+                                </button>
                             </div>
                         </li>
                     })}
@@ -53,5 +60,11 @@ export default class Admin extends Component {
 
     validInput() {
         return this.state["categoryTitle"] !== "" && this.state["categoryTitle"].length > 0;
+    }
+
+    onDeleteCategoryClicked(event, category) {
+        event.preventDefault();
+
+        this.props.removeCategory(category)
     }
 }
