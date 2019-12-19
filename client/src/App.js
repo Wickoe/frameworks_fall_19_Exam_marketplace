@@ -92,7 +92,9 @@ class App extends Component {
 
                     <User path={"/user/:username"} user={this.props["user"]}
                           categories={this.props["categories"]["categories"]}
-                          loadUser={(username) => this.props.loadUser(username)}/>
+                          loadUser={(username) => this.props.loadUser(username)}
+                          postCategory={(category) => this.props.postCategory(category)}
+                          removeCategory={(category) => this.props.removeCategory(category)}/>
 
                     {this.authService.authenticatedUser() ?
                         <PostBook path={"/post-book-for-sale"} categories={this.props["categories"]["categories"]}
