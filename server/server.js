@@ -96,17 +96,17 @@ app.use('/api/users', userPaths);
 const categoryRoutes = require('./src/Routes/CategoryRoutes')(bookService);
 app.use('/api/categories', tokenValidator({secret: securitySecret}).unless({path: openPaths}), categoryRoutes);
 
-// app.delete('/api/categories/:id', tokenValidator({secret: securitySecret}), async function deleteCategory(req, res) {
-//     if(!req.user["admin"]) {
-//         res.status(401).json({msg: `User is unauthorized!`, error: 1});
-//     }
-//
-//     const categoryId = req.params["id"];
-//
-//     const removeCategoryResponse = await bookService.removeCategory(categoryId);
-//
-//     return res.json(removeCategoryResponse);
-// });
+app.put('/api/categories/:id', tokenValidator({secret: securitySecret}), async function deleteCategory(req, res) {
+    if(!req.user["admin"]) {
+        res.status(401).json({msg: `User is unauthorized!`, error: 1});
+    }
+
+    const categoryId = req.params["id"];
+
+    const removeCategoryResponse = await bookService.removeCategory(categoryId);
+
+    return res.json(removeCategoryResponse);
+});
 
 const bookRoutes = require('./src/Routes/BookRoutes')(bookService);
 app.use('/api/books', tokenValidator({secret: securitySecret}).unless({path: openPaths}), bookRoutes);

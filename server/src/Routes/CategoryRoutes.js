@@ -65,17 +65,17 @@ module.exports = (bookService) => {
         return res.json(categoryResponse);
     }
 
-    async function deleteCategory(req, res) {
-        if(!req.user["admin"]) {
-            res.status(401).json({msg: `User is unauthorized!`, error: 1});
-        }
-
-        const categoryId = req.params["id"];
-
-        const removeCategoryResponse = await bookService.removeCategory(categoryId);
-
-        return res.json(removeCategoryResponse);
-    }
+    // async function deleteCategory(req, res) {
+    //     if(!req.user["admin"]) {
+    //         res.status(401).json({msg: `User is unauthorized!`, error: 1});
+    //     }
+    //
+    //     const categoryId = req.params["id"];
+    //
+    //     const removeCategoryResponse = await bookService.removeCategory(categoryId);
+    //
+    //     return res.json(removeCategoryResponse);
+    // }
 
     return router;
 };
