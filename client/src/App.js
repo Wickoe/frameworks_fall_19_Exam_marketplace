@@ -2,7 +2,13 @@ import React, {Component} from 'react';
 import {Link, Redirect, Router} from "@reach/router";
 import {connect} from 'react-redux'
 
-import {createUserAction, loginUserAction, logoutUserAction, loadUserCredentials} from "./Actions/UserActions";
+import {
+    createUserAction,
+    loginUserAction,
+    logoutUserAction,
+    loadUserCredentials,
+    loadUserByUsername
+} from "./Actions/UserActions";
 import {
     loadCategories,
     loadCategoryBooks,
@@ -39,10 +45,11 @@ class App extends Component {
     }
 
     render() {
-        document.title = (process.env.REACT_APP_NAME || "Bookshop marketplace development");
+        document.title = process.env.REACT_APP_NAME;
 
         return (
             <React.Fragment>
+                <Link to={`/user/${this.authService.getUsername()}`}>User page</Link>
                 {this.props.notification["display"] &&
                 <div>
                     <h1> {this.props.notification["msg"]}</h1>
@@ -62,12 +69,10 @@ class App extends Component {
                     }
                 </div>
                 <Router>
-
-
                     <Categories path={"/"} categories={this.props.categories}
                                 loadCategoryBooks={(categoryId) => this.props.loadCategoryBooks(categoryId, this.props["books"]["books"])}/>
 
-                    <Category path={`/categories/:category`} books={this.props["books"]["categoryBooks"]}
+                    <Category path={`/category/:category`} books={this.props["books"]["categoryBooks"]}
                               loadBook={(bookId) => this.props.loadBook(bookId, this.props["books"]["books"])}
                               loadCategoryBooks={(category) => this.props.loadCategoryBooks(category, this.props["books"]["books"])}/>
 
@@ -76,11 +81,18 @@ class App extends Component {
                           seller={this.props["books"]["bookSeller"]}
                           category={this.props["books"]["bookCategory"]}/>
 
-                    <SignIn path={"/sign-in"} loginUser={(userCredentials) => this.props.loginUser(userCredentials)}/>
+                    {this.authService.authenticatedUser() ?
+                        <Redirect noThrow from={"/sign-in"} to={`/user/${this.authService.getUsername()}`}/>
+                        :
+                        <SignIn path={"/sign-in"}
+                                loginUser={(userCredentials) => this.props.loginUser(userCredentials)}/>
+                    }
 
                     <SignUp path={"/sign-up"} createUser={(userCredentials) => this.props.createUser(userCredentials)}/>
 
-                    <User path={"/user/:username"} user={this.props["user"]}/>
+                    <User path={"/user/:username"} user={this.props["user"]}
+                          categories={this.props["categories"]["categories"]}
+                          loadUser={(username) => this.props.loadUser(username)}/>
 
                     {this.authService.authenticatedUser() ?
                         <PostBook path={"/post-book-for-sale"} categories={this.props["categories"]["categories"]}
@@ -92,7 +104,7 @@ class App extends Component {
                     {this.authService.authenticatedUser() && this.authService.authenticatedUserIsAdmin() ?
                         <Admin path={"/admin"} categories={this.props["categories"]["categories"]}
                                postCategory={(category) => this.props.postCategory(category)}
-                        removeCategory={(category) => this.props.removeCategory(category)}/>
+                               removeCategory={(category) => this.props.removeCategory(category)}/>
                         :
                         <Redirect noThrow from={"/admin"} to={"/"}/>
                     }
@@ -119,7 +131,8 @@ const mapDispatchToProps = dispatch => ({
     loadCategoryBooks: (category, books) => dispatch(loadCategoryBooks(category, books)),
     postBook: book => dispatch(postBook(book)),
     loadBook: (bookId, books) => dispatch(loadBook(bookId, books)),
-    removeCategory: (category) => dispatch(removeCategoryAction(category))
+    removeCategory: (category) => dispatch(removeCategoryAction(category)),
+    loadUser: username => dispatch(loadUserByUsername(username))
 });
 
 export default connect(

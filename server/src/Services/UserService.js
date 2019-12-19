@@ -48,6 +48,16 @@ class UserService {
     async getUser(id) {
         return await this.userDal.getUser(id);
     }
+
+    async getUserByUsername(username) {
+        const user = await this.userDal.getUserByUsername(username);
+
+        if(user !== null) {
+            return {msg: `User ${username}`, data: user};
+        }
+
+        return {msg: "User does not exists!", error: 1};
+    }
 }
 
 module.exports = (userDal) => new UserService(userDal);

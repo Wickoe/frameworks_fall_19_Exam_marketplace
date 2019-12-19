@@ -12,6 +12,9 @@ module.exports = (authService, userService) => {
     router.route('/:id')
         .get((req, res) => getUser(req, res));
 
+    router.route('/username/:username')
+        .get((req, res) => getUserByUsername(req, res));
+
     /** Functionality **/
     async function getUsers(req, res) {
         const usersResponse = await userService.getUsers();
@@ -51,6 +54,14 @@ module.exports = (authService, userService) => {
         const authenticationResponse = await authService.authenticate(userCredentials);
 
         return res.json(authenticationResponse);
+    }
+
+    async function getUserByUsername(req, res) {
+        const username = req.params["username"];
+
+        const userResponse = await userService.getUserByUsername(username);
+
+        return res.json(userResponse);
     }
 
     /* Router export */

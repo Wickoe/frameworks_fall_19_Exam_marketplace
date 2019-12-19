@@ -1,19 +1,26 @@
 import React, {Component} from 'react';
+import AuthenticationService from "../Services/AuthenticationService";
+import Admin from "./Admin";
 import {Link} from "@reach/router";
 
 export default class User extends Component {
-    render() {
-        const userLoggedIn = this.props["user"]["username"] !== undefined && this.props["user"]["username"].length > 0;
+    authService = new AuthenticationService();
 
+    componentDidMount() {
+        this.props.loadUser(this.props["username"])
+    }
+
+    render() {
         return (
             <React.Fragment>
-                {!userLoggedIn ?
-                    <h1> Please login!</h1>
-                    :
-                    <div>
-                        <Link to={"/sell-book"}>Sell book!</Link>
-                        {this.props["user"]["admin"] && <Link to={"/admin"}>Admin</Link>}
-                    </div>
+                <Link to={"/"}>Back</Link>
+                <label>Username: <p>{this.props["user"]["user"]["username"]}</p></label>
+                <label>Name: <p>{this.props["user"]["user"]["name"]}</p></label>
+
+                {this.authService.authenticatedUserPage(this.props["user"]["user"]) &&
+                    <Admin categories={this.props["categories"]}
+                           postCategory={(category) => this.props.postCategory(category)}
+                           removeCategory={(category) => this.props.removeCategory(category)}/>
                 }
             </React.Fragment>
         );

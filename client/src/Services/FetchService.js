@@ -14,24 +14,23 @@ export default class FetchService {
 
         const data = await webResponse.json();
 
-        const error = (webResponseStatus !== 200 || webResponseStatus !== 304 || data["error"]) ? 0: 1;
-
-        return {msg: data["msg"], error: error, data: data, webStatus: webResponseStatus};
+        return {msg: data["msg"], error: data["error"], data: data, webStatus: webResponseStatus};
     }
 
     async postUser(userCredentials) {
-        const postUserApi = (process.env.REACT_POST_USER_API || 'http://localhost:8080/api/users');
+        const postUserApi = process.env.REACT_APP_USER_API;
 
         return this.fetch(postUserApi, "", 'POST', userCredentials);
     }
 
     async authenticateUser(userCredentials) {
-        const authenticateUserApi = (process.env.REACT_AUTHENTICATE_USER_API || 'http://localhost:8080/api/users/authenticate');
+        const authenticateUserApi = process.env.REACT_APP_AUTHENTICATE_USER_API;
 
         const webResponse = await this.fetch(authenticateUserApi, "", 'POST', userCredentials);
 
         webResponse["admin"] = webResponse["data"]["admin"];
         webResponse["token"] = webResponse["data"]["token"];
+        webResponse["id"] = webResponse["data"]["userId"];
 
         delete webResponse["data"];
 
@@ -39,7 +38,7 @@ export default class FetchService {
     }
 
     async postCategory(category) {
-        const postCategoryApi = (process.env.REACT_POST_CATEGORY_API || 'http://localhost:8080/api/categories');
+        const postCategoryApi = process.env.REACT_APP_CATEGORY_API;
 
         const authService = new AuthenticationService();
 
@@ -54,7 +53,7 @@ export default class FetchService {
     }
 
     async loadCategories() {
-        const fetchCategories = (process.env.REACT_POST_CATEGORY_API || 'http://localhost:8080/api/categories');
+        const fetchCategories = process.env.REACT_APP_CATEGORY_API ;
 
         const webResponse = await this.fetch(fetchCategories);
 
@@ -66,7 +65,7 @@ export default class FetchService {
     }
 
     async loadCategoryBooks(categoryId) {
-        const fetchCategoryBooks = (process.env.REACT_POST_CATEGORY_API || 'http://localhost:8080/api/categories');
+        const fetchCategoryBooks = process.env.REACT_APP_CATEGORY_API;
         const pathArgument = `${categoryId}/books`;
 
         const webResponse = await this.fetch(fetchCategoryBooks, pathArgument);
@@ -79,7 +78,7 @@ export default class FetchService {
     }
 
     async postBook(book) {
-        const postBookApi = (process.env.REACT_POST_BOOK_API || 'http://localhost:8080/api/books');
+        const postBookApi = process.env.REACT_APP_BOOK_API;
         const authHeader = new AuthenticationService().authHeader();
 
         const webResponse = await this.fetch(postBookApi, "", 'POST', book, authHeader);
@@ -99,7 +98,7 @@ export default class FetchService {
     }
 
     async getCategoryId(category) {
-        const getCategoryId = (process.env.REACT_GET_CATEGORY_ID || 'http://localhost:8080/api/categories/categoryId');
+        const getCategoryId = process.env.REACT_APP_CATEGORY_ID_API;
 
         const webResponse = await this.fetch(getCategoryId, "", 'POST', {category: category});
 
@@ -111,7 +110,7 @@ export default class FetchService {
     }
 
     async getCategory(categoryId) {
-        const categoryApi = (process.env.REACT_CATEGORY_API || 'http://localhost:8080/api/categories');
+        const categoryApi = process.env.REACT_APP_CATEGORY_API;
 
         const webResponse = await this.fetch(categoryApi, categoryId);
 
@@ -126,7 +125,7 @@ export default class FetchService {
     }
 
     async bookExists(book) {
-        const bookApi = (process.env.REACT_BOOK_API || 'http://localhost:8080/api/books');
+        const bookApi = process.env.REACT_APP_BOOK_API;
         const pathArgument = `${book["_id"]}`;
 
         const webResponse = await this.fetch(bookApi, pathArgument);
@@ -138,7 +137,7 @@ export default class FetchService {
     }
 
     async getBook(bookId) {
-        const bookApi = (process.env.REACT_BOOK_API || 'http://localhost:8080/api/books');
+        const bookApi = process.env.REACT_APP_BOOK_API;
         const pathArgument = `${bookId}`;
 
         const webResponse = await this.fetch(bookApi, pathArgument);
@@ -150,7 +149,7 @@ export default class FetchService {
     }
 
     async getSeller(sellerId) {
-        const userApi = (process.env.REACT_USERS_API || 'http://localhost:8080/api/users');
+        const userApi = process.env.REACT_APP_USER_API;
 
         const webResponse = await this.fetch(userApi, sellerId);
 
@@ -161,7 +160,7 @@ export default class FetchService {
     }
 
     async removeCategory(categoryId) {
-        const categoryApi = (process.env.REACT_CATEGORY_API || 'http://localhost:8080/api/categories');
+        const categoryApi = process.env.REACT_APP_CATEGORY_API;
 
         const authHeader = (new AuthenticationService()).authHeader();
 
@@ -170,5 +169,17 @@ export default class FetchService {
         } catch (e) {
             return {msg: e.message, error: 1}
         }
+    }
+
+    async getUserByUsername(username) {
+        const userApi = process.env.REACT_APP_USER_API,
+            pathArgument = `username/${username}`;
+
+        const webResponse = await this.fetch(userApi, pathArgument);
+
+        webResponse["user"] = webResponse["data"]["data"];
+        delete webResponse["data"];
+
+        return webResponse;
     }
 }

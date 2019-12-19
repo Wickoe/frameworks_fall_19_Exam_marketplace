@@ -12,56 +12,26 @@ const updateCategory = category => ({
     category: category
 });
 
-const postCategory = category => async function (dispatch) {
-    const displayTimer = 2000;
-    const categoryCreationResponse = await bookService.postCategory(category);
+const updateBookSeller = (seller, category) => ({
+    type: 'UPDATE_SELLING_BOOK',
+    seller: seller,
+    category: category
+});
 
-
-    if (categoryCreationResponse["error"]) {
-        dispatch(showNotificationAction(categoryCreationResponse["msg"], 2, displayTimer));
-        return;
-    }
-
-    dispatch(showNotificationAction(categoryCreationResponse["msg"], 1, displayTimer));
-    dispatch(updateCategory(categoryCreationResponse["category"]));
-};
+const updateBook = book => ({
+    type: 'UPDATE_BOOK',
+    book: book
+});
 
 const removeCategory = category => ({
     type: 'REMOVE_CATEGORY',
     category: category
 });
 
-const removeCategoryAction = category => async function(dispatch) {
-    const displayTimer = 2000;
-
-    const removeCategoryResponse = await bookService.removeCategory(category);
-
-    if(removeCategoryResponse["error"]) {
-        return dispatch(showNotificationAction(removeCategoryResponse["msg"], 2, displayTimer));
-    }
-
-    dispatch(removeCategory(category));
-    dispatch(showNotificationAction(removeCategoryResponse["msg"], 1, displayTimer));
-};
-
 const updateCategories = categories => ({
     type: 'UPDATE_CATEGORIES',
     categories: categories
 });
-
-const loadCategories = _ => async function (dispatch) {
-    const displayTimer = 2000;
-    const fetchCategoriesResponse = await bookService.loadCategories();
-
-    dispatch(showNotificationAction(fetchCategoriesResponse["msg"], 1, displayTimer));
-
-    if (fetchCategoriesResponse["error"]) {
-        dispatch(updateCategories([]));
-        return;
-    }
-
-    dispatch(updateCategories(fetchCategoriesResponse["categories"]))
-};
 
 const updateBooks = books => ({
     type: 'UPDATE_BOOKS',
@@ -73,8 +43,45 @@ const updateCategoryBooks = books => ({
     books: books
 });
 
+const displayNotification = (msg, level) => async function(dispatch) {
+    dispatch(showNotificationAction(msg, level, process.env.REACT_APP_DISPLAY_NOTIFICATION_TIMER))
+};
+
+const postCategory = category => async function (dispatch) {
+    const categoryCreationResponse = await bookService.postCategory(category);
+
+    if (categoryCreationResponse["error"]) {
+        return dispatch(displayNotification(categoryCreationResponse["msg"], 2));
+    }
+
+    dispatch(displayNotification(categoryCreationResponse["msg"], 1));
+    dispatch(updateCategory(categoryCreationResponse["category"]));
+};
+
+const removeCategoryAction = category => async function(dispatch) {
+    const removeCategoryResponse = await bookService.removeCategory(category);
+
+    if(removeCategoryResponse["error"]) {
+        return dispatch(displayNotification(removeCategoryResponse["msg"], 2));
+    }
+
+    dispatch(removeCategory(category));
+    dispatch(displayNotification(removeCategoryResponse["msg"], 1));
+};
+
+const loadCategories = _ => async function (dispatch) {
+    const fetchCategoriesResponse = await bookService.loadCategories();
+
+    dispatch(displayNotification(fetchCategoriesResponse["msg"], 1));
+
+    if (fetchCategoriesResponse["error"]) {
+        return dispatch(updateCategories([]));
+    }
+
+    dispatch(updateCategories(fetchCategoriesResponse["categories"]))
+};
+
 const loadCategoryBooks = (category, books) => async function (dispatch) {
-    const displayTimer = 2000;
     let categoryBooks = [];
 
     try {
@@ -88,7 +95,7 @@ const loadCategoryBooks = (category, books) => async function (dispatch) {
             categoryBooks = await bookService.loadCategoryBooks(categoryId)
         }
     } catch (e) {
-        dispatch(showNotificationAction("Invalid category!", 2, displayTimer))
+        dispatch(displayNotification("Invalid category!", 2));
     }
 
     dispatch(updateBooks(categoryBooks));
@@ -96,8 +103,6 @@ const loadCategoryBooks = (category, books) => async function (dispatch) {
 };
 
 const postBook = book => async function (dispatch) {
-    const displayTimer = 2000;
-
     const postBookResponse = await bookService.postBook(book);
 
     // TODO
@@ -105,7 +110,7 @@ const postBook = book => async function (dispatch) {
         dispatch(updateBooks([postBookResponse["data"]]));
     }
 
-    dispatch(showNotificationAction(postBookResponse["msg"], 1, displayTimer));
+    dispatch(displayNotification(postBookResponse["msg"], 1));
 };
 
 const loadBook = (bookId, books) => async function (dispatch) {
@@ -130,19 +135,8 @@ const loadBook = (bookId, books) => async function (dispatch) {
         return dispatch(updateBook(book));
     }
 
-    dispatch(showNotificationAction("Book does not exists!"));
-    return navigate('/');
+    dispatch(displayNotification("Book does not exists!", 1));
+    navigate('/');
 };
-
-const updateBookSeller = (seller, category) => ({
-    type: 'UPDATE_SELLING_BOOK',
-    seller: seller,
-    category: category
-});
-
-const updateBook = book => ({
-    type: 'UPDATE_BOOK',
-    book: book
-});
 
 export {postCategory, loadCategories, loadCategoryBooks, postBook, loadBook, removeCategoryAction}

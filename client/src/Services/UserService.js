@@ -5,5 +5,7 @@ export default class UserService {
         this.fetcher = new FetchService();
     }
 
-
+    async loadUserByUsername(username) {
+        return await this.fetcher.getUserByUsername(username);
+    }
 }

@@ -1,18 +1,6 @@
 import React, {Component} from 'react';
-import AuthenticationService from "../Services/AuthenticationService";
-import SignIn from "./SignIn";
 
 export default class Admin extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = ({
-            categoryTitle: ""
-        });
-
-        this.authService = new AuthenticationService();
-    }
-
     render() {
         return (
             <div>
@@ -51,15 +39,19 @@ export default class Admin extends Component {
     onSubmitInputValueClicked(event) {
         event.preventDefault();
 
-        if (!this.validInput()) {
+        if (!this.validateInput()) {
             return alert("Please enter valid input!")
         }
 
         this.props.postCategory({title: this.state["categoryTitle"]})
     }
 
-    validInput() {
-        return this.state["categoryTitle"] !== "" && this.state["categoryTitle"].length > 0;
+    validateInput() {
+        try {
+            return this.state["categoryTitle"] !== "" && this.state["categoryTitle"].length > 0;
+        } catch (_) {
+            return false;
+        }
     }
 
     onDeleteCategoryClicked(event, category) {

@@ -22,8 +22,6 @@ export default class BookService {
             postCategoryResponse["msg"] = "Something went wrong while posting the category. Please try again later!";
         }
 
-        postCategoryResponse["category"] = postCategoryResponse["category"];
-
         return postCategoryResponse;
     }
 
@@ -124,6 +122,6 @@ export default class BookService {
     }
 
     isDefaultCategory(category) {
-        return category["title"] === (process.env.REACT_DEFAULT_CATEGORY || "Default");
+        return category["title"] === process.env.REACT_APP_DEFAULT_CATEGORY;
     }
 }

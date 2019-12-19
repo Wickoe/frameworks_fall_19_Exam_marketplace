@@ -1,4 +1,4 @@
-export function user(state = {username: undefined, token: undefined}, action) {
+export function user(state = {username: undefined, token: undefined, user: {}}, action) {
     const newState = {...state};
 
     switch (action["type"]) {
@@ -12,6 +12,11 @@ export function user(state = {username: undefined, token: undefined}, action) {
             newState["username"] = action["username"];
             newState["token"] = action["token"];
             newState["admin"] = action["admin"];
+            newState["userId"] = action["userId"];
+
+            return newState;
+        case "DISPLAY_USER":
+            newState["user"] = action["user"];
 
             return newState;
         default:

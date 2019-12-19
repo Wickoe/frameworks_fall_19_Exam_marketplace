@@ -20,6 +20,14 @@ class SocketService {
     postedData(msg, dataType, id) {
         this.io.of('/my_app').emit('new-data', {msg: msg, dataType: dataType, id: id});
     };
+
+    emitNewBookAdded(bookTitle, bookId) {
+        this.io.of("/my_app").emit('new-data', {msg: `${bookTitle} has been added as a new book!`, action: 'UPDATE_BOOKS', categoryId: bookId})
+    }
+
+    emitNewCategoryAdded(categoryTitle, categoryId) {
+        this.io.of("/my_app").emit('new-data', {msg: `${categoryTitle} has been added as a new category!`, action: 'UPDATE_BOOKS', categoryId: categoryId})
+    }
 }
 
 module.exports = () => new SocketService();

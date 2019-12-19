@@ -11,7 +11,6 @@ const socket = require('./src/Services/SocketService')();
 const encryptionAlgorithm = require('bcryptjs');
 const webToken = require('jsonwebtoken');
 const tokenValidator = require('express-jwt');
-const unauthorizedHandler = require('./src/Middleware/UnauthorizedRouteHandler');
 
 /* Data access layers */
 const userDal = require('./src/Database/UserDal')(database);
@@ -27,7 +26,7 @@ const encryptionLevel = (process.env.ENCRYPTION_LEVEL || 10);
 /* Services */
 const authService = require('./src/Services/AuthenticationService')(userDal, securitySecret, encryptionAlgorithm, webToken, encryptionLevel);
 const userService = require('./src/Services/UserService')(userDal);
-const bookService = require('./src/Services/BookService')(bookDal, categoryDal);
+const bookService = require('./src/Services/BookService')(bookDal, categoryDal, socket);
 
 /* Path setup */
 const openPaths = [...require('./src/Configuration/paths.json'),
@@ -62,6 +61,14 @@ const openPaths = [...require('./src/Configuration/paths.json'),
     {
         "url": /\/api\/users\/[\w]+\//ig,
         "method": "GET"
+    },
+    {
+        "url": /\/api\/users\/[\w]+\/username\/[w]+/ig,
+        "method": "GET"
+    },
+    {
+        "url": /\/api\/users\/[\w]+\/username\/[w]+\//ig,
+        "method": "GET"
     }
 ];
 
@@ -72,7 +79,15 @@ app.use(morgan("combined"));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(tokenValidator({secret: securitySecret}).unless({path: openPaths}));
-app.use(unauthorizedHandler);
+
+app.use((error, req, res, next) => {
+    if(error.name === "UnauthorizedError") {
+        res.status(401).json({msg: `${error.message}`, error: 1});
+        return;
+    }
+
+    next();
+});
 
 /* Routes */
 const userPaths = require('./src/Routes/UserRoutes')(authService, userService);
@@ -81,26 +96,24 @@ app.use('/api/users', userPaths);
 const categoryRoutes = require('./src/Routes/CategoryRoutes')(bookService);
 app.use('/api/categories', tokenValidator({secret: securitySecret}).unless({path: openPaths}), categoryRoutes);
 
-app.delete('/api/categories/:id', tokenValidator({secret: securitySecret}), async function deleteCategory(req, res) {
-    if(!req.user["admin"]) {
-        res.status(401).json({msg: `User is unauthorized!`, error: 1});
-    }
-
-    const categoryId = req.params["id"];
-
-    const removeCategoryResponse = await bookService.removeCategory(categoryId);
-
-    return res.json(removeCategoryResponse);
-});
-
-
+// app.delete('/api/categories/:id', tokenValidator({secret: securitySecret}), async function deleteCategory(req, res) {
+//     if(!req.user["admin"]) {
+//         res.status(401).json({msg: `User is unauthorized!`, error: 1});
+//     }
+//
+//     const categoryId = req.params["id"];
+//
+//     const removeCategoryResponse = await bookService.removeCategory(categoryId);
+//
+//     return res.json(removeCategoryResponse);
+// });
 
 const bookRoutes = require('./src/Routes/BookRoutes')(bookService);
 app.use('/api/books', tokenValidator({secret: securitySecret}).unless({path: openPaths}), bookRoutes);
 
-/* Resolves paths regarding the React app and its routes */
-const pathResolver = require('./src/Routes/PathResolver');
-app.use('*', pathResolver);
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve('..', 'client', 'build', 'index.html'));
+});
 
 /* Server startup */
 database.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true})

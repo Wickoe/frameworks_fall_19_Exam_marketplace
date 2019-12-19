@@ -1,7 +1,8 @@
 class BookService {
-    constructor(bookDal, categoryDal) {
+    constructor(bookDal, categoryDal, socketService) {
         this.bookDal = bookDal;
         this.categoryDal = categoryDal;
+        this.socket = socketService;
     }
 
     async postBook(book, userId) {
@@ -16,6 +17,8 @@ class BookService {
 
         try {
             const savedBook = await this.bookDal.saveBook(book);
+
+            this.socket.emitNewBookAdded(savedBook["title"], savedBook["_id"]);
 
             return {msg: "Book created!", data: savedBook};
         } catch (e) {
@@ -54,7 +57,11 @@ class BookService {
         }
 
         try {
-            return {data: await this.categoryDal.saveCategory(category), msg: `Category ${category["title"]} created!`};
+            const newCategory = await this.categoryDal.saveCategory(category);
+
+            // socket.emitNewCategoryAdded(newCategory["title"], newCategory["_id"]);
+
+            return {data: newCategory, msg: `Category ${category["title"]} created!`};
         } catch (e) {
             return {error: 1, msg: "An error happened while creating the category. Please try again later!"}
         }
@@ -109,11 +116,13 @@ class BookService {
         const categoryBooks = await this.bookDal.getCategoryBooks(categoryId);
 
         try {
-            await categoryBooks.forEach(async book => {
-                await this.bookDal.updateBookCategory(book["_id"], defaultCategory["_id"]);
+            categoryBooks.forEach(book => {
+                this.bookDal.updateBookCategory(book["_id"], defaultCategory["_id"]);
             });
 
             const category = await this.categoryDal.removeCategory(categoryId);
+
+            this.socket.emitCategoryRemoval(category["_title"], categoryId);
 
             return {msg: `Category ${category["title"]} removed!`}
         } catch (e) {

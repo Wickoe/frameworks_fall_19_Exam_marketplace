@@ -7,7 +7,7 @@ export default class AuthenticationService {
 
     async createAccount(userCredentials) {
         if (!this.validUserCredentials(userCredentials)) {
-            return {error: 1, msg: "Please enter an input for all required input fields!"}
+            return {error: 1, msg: "Please enter required input fields! (Denoted by the '*' (Asterisk))"}
         }
 
         userCredentials["admin"] = userCredentials["userGroup"] === "admin";
@@ -28,6 +28,7 @@ export default class AuthenticationService {
             this.setToken(userAuthResponse["token"]);
             this.setUsername(userCredentials["username"]);
             this.setAdmin(userAuthResponse["admin"]);
+            this.setUserId(userAuthResponse["id"]);
 
             userAuthResponse["username"] = userCredentials["username"];
         }
@@ -38,6 +39,7 @@ export default class AuthenticationService {
     logoutUser() {
         this.setUsername("");
         this.setToken("");
+        this.setAdmin("");
     }
 
     authenticatedUser() {
@@ -55,24 +57,32 @@ export default class AuthenticationService {
         return localStorage.getItem("token");
     }
 
-    getUsername() {
-        return localStorage.getItem("username");
-    }
-
     setToken(token) {
         localStorage.setItem("token", token);
+    }
+
+    getUsername() {
+        return localStorage.getItem("username");
     }
 
     setUsername(username) {
         localStorage.setItem("username", username);
     }
 
+    getAdmin() {
+        return localStorage.getItem("admin");
+    }
+
     setAdmin(admin) {
         localStorage.setItem("admin", admin);
     }
 
-    getAdmin() {
-        return localStorage.getItem("admin");
+    getUserId() {
+        return localStorage.getItem("userId");
+    }
+
+    setUserId(userId) {
+        localStorage.setItem("userId", userId);
     }
 
     validUserCredentials(userCredentials) {
@@ -95,17 +105,13 @@ export default class AuthenticationService {
 
     authenticatedUserIsAdmin() {
         try {
-            const admin = this.getAdmin();
-
-            if(admin === "false") {
-                return false
-            } else {
-                return true;
-            }
-
-            // return Boolean(this.getAdmin());
+            return this.getAdmin() !== "false";
         } catch (e) {
             return false;
         }
+    }
+
+    authenticatedUserPage(userPage) {
+        return this.authenticatedUserIsAdmin() && this.getUserId() === userPage["_id"];
     }
 }

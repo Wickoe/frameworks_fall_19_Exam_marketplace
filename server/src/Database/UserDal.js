@@ -26,7 +26,11 @@ class UserDal {
     }
 
     async getUser(id) {
-        return this.userModel.findOne({_id: id}).select("-password");
+        return this.userModel.findOne({_id: id}).select("-password -admin");
+    }
+
+    async getUserByUsername(username) {
+        return this.userModel.findOne({username: username}).select("-password -admin");
     }
 }
 

@@ -1,63 +1,67 @@
-/*Libraries */
-import UserService from '../Services/UserService';
+/* Libraries */
 import AuthenticationService from "../Services/AuthenticationService";
+import UserService from "../Services/UserService";
 import {showNotificationAction} from "./NotificationActions";
 import {navigate} from "@reach/router";
 
-const userService = new UserService();
 const authService = new AuthenticationService();
+const userService = new UserService();
 
 /* Actions */
-const updateUser = (username, token, admin) => ({
+const updateUser = (username, token, admin, userId) => ({
     type: "UPDATE_USER",
     username: username,
     token: token,
-    admin: admin
+    admin: admin,
+    userId: userId
 });
 
-const createUserAction = (userCredentials) => async function (dispatch) {
-    const displayTimer = (process.env.REACT_DISPLAY_NOTIFICATION_TIMER || 2000);
+const displayUser =  user => ({
+    type: "DISPLAY_USER",
+    user: user
+});
 
+const displayNotification = (msg, level) => async function (dispath) {
+    dispath(showNotificationAction(msg, level, process.env.REACT_APP_DISPLAY_NOTIFICATION_TIMER));
+};
+
+const createUserAction = (userCredentials) => async function (dispatch) {
     const createUserResponse = await authService.createAccount(userCredentials);
 
     if (createUserResponse["error"]) {
-        dispatch(showNotificationAction(createUserResponse["msg"], 2, displayTimer));
-        return;
+        return dispatch(displayNotification(createUserResponse["msg"], 2));
     }
 
-    dispatch(showNotificationAction(createUserResponse["msg"], 1, displayTimer));
-    setTimeout(navigate("/"), displayTimer);
+    dispatch(displayNotification(createUserResponse["msg"], 1));
+    navigate("/");
 };
 
 const loginUserAction = (userCredentials) => async function (dispatch) {
-    const displayTimer = (process.env.REACT_DISPLAY_NOTIFICATION_TIMER || 2000);
-
     const userLoginResponse = await authService.authenticateUser(userCredentials);
 
     if (userLoginResponse["error"]) {
-        return dispatch(showNotificationAction(userLoginResponse["msg"], 2, displayTimer));
+        return dispatch(displayNotification(userLoginResponse["msg"], 2));
     }
 
     const msg = userLoginResponse["msg"],
         username = userLoginResponse["username"],
         token = userLoginResponse["token"],
-        admin = userLoginResponse["admin"];
+        admin = userLoginResponse["admin"],
+        userId = userLoginResponse["id"];
 
-    dispatch(showNotificationAction(msg, 1, displayTimer));
-    dispatch(updateUser(username, token, admin));
+    dispatch(displayNotification(msg, 1));
+    dispatch(updateUser(username, token, admin, userId));
 
-    setTimeout(navigate(`/user/${username}`), displayTimer);
+    navigate(`/user/${username}`);
 };
 
 const logoutUserAction = _ => function (dispatch) {
-    const displayTimer = (process.env.REACT_DISPLAY_NOTIFICATION_TIMER || 2000);
+    authService.logoutUser();
 
-    // TODO - change structure
-    const logoutResponse = authService.logoutUser();
-
-    dispatch(showNotificationAction("User logged out!", 1, displayTimer));
+    dispatch(displayNotification("User logged out!", 1));
     dispatch(updateUser(undefined, undefined));
-    setTimeout(navigate("/"), displayTimer);
+
+    navigate("/");
 };
 
 const loadUserCredentials = _ => function (dispatch) {
@@ -66,5 +70,16 @@ const loadUserCredentials = _ => function (dispatch) {
     dispatch(updateUser(userCredentials["username"], userCredentials["token"], userCredentials["admin"]));
 };
 
+const loadUserByUsername = username => async function(dispatch) {
+    const userResponse = await userService.loadUserByUsername(username);
+
+    if(userResponse["error"]) {
+        dispatch(displayNotification(userResponse["msg"], 2));
+        return dispatch(displayUser({}));
+    }
+
+    dispatch(displayUser(userResponse["user"]));
+};
+
 /* Export */
-export {createUserAction, loginUserAction, logoutUserAction, loadUserCredentials}
+export {createUserAction, loginUserAction, logoutUserAction, loadUserCredentials, loadUserByUsername}

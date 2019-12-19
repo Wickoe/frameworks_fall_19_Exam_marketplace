@@ -1,16 +1,6 @@
 import React, {Component} from 'react';
 
 export default class SignUp extends Component {
-    constructor(props) {
-        super(props);
-
-        // this.state = ({
-        //     username: "",
-        //     password: "",
-        //     userGroup: ""
-        // })
-    }
-
     render() {
         return (
             <div>

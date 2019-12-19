@@ -13,7 +13,8 @@ module.exports = (bookService) => {
         .post((req, res) => getCategoryId(req, res));
 
     router.route('/:id')
-        .get((req, res) => getCategory(req, res));
+        .get((req, res) => getCategory(req, res))
+        .delete((req, res) => deleteCategory(req, res));
 
     /* Functionality */
     async function getCategories(req, res) {
@@ -62,6 +63,18 @@ module.exports = (bookService) => {
         const categoryResponse = await bookService.getCategory(categoryId);
 
         return res.json(categoryResponse);
+    }
+
+    async function deleteCategory(req, res) {
+        if(!req.user["admin"]) {
+            res.status(401).json({msg: `User is unauthorized!`, error: 1});
+        }
+
+        const categoryId = req.params["id"];
+
+        const removeCategoryResponse = await bookService.removeCategory(categoryId);
+
+        return res.json(removeCategoryResponse);
     }
 
     return router;
