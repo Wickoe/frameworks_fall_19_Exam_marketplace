@@ -165,7 +165,7 @@ export default class FetchService {
         const authHeader = (new AuthenticationService()).authHeader();
 
         try {
-            return await this.fetch(categoryApi, categoryId, 'DELETE', {}, authHeader);
+            return await this.fetch(categoryApi, categoryId, 'PUT', {}, authHeader);
         } catch (e) {
             return {msg: e.message, error: 1}
         }
