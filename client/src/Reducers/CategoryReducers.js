@@ -1,4 +1,11 @@
-export function categories(state = {categories: [], books: []}, action) {
+export function categories(state = {
+    categories: [],
+    books: [],
+    categoryBooks: [],
+    book: {},
+    bookCategory: {},
+    bookSeller: {}
+}, action) {
     const newState = {...state};
 
     switch (action["type"]) {
@@ -53,17 +60,17 @@ export function categories(state = {categories: [], books: []}, action) {
             let defaultCategory;
 
             newState["categories"].forEach((category, index) => {
-                if(category["title"] === action["category"] ["title"] && category["_id"] === action["category"]["_id"]) {
+                if (category["title"] === action["category"] ["title"] && category["_id"] === action["category"]["_id"]) {
                     newState["categories"].splice(index, 1);
                 }
 
-                if(category["title"] === (process.env.REACT_APP_DEFAULT_CATEGORY)) {
+                if (category["title"] === (process.env.REACT_APP_DEFAULT_CATEGORY)) {
                     defaultCategory = category["_id"];
                 }
             });
 
             newState["books"].forEach(book => {
-                if(book["category"] === action["category"]["_id"]) {
+                if (book["category"] === action["category"]["_id"]) {
                     book["category"] = defaultCategory;
                 }
             });
