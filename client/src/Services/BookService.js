@@ -78,13 +78,7 @@ export default class BookService {
     }
 
     async getCategoryId(category) {
-        const categoryIdResponse = await this.fetcher.getCategoryId(category);
-
-        if(categoryIdResponse["error"]) {
-            throw Error("There is no such category!");
-        }
-
-        return categoryIdResponse["data"];
+        return await this.fetcher.getCategoryId(category);
     }
 
     async bookExists(book) {

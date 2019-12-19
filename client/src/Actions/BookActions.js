@@ -85,14 +85,24 @@ const loadCategoryBooks = (category, books) => async function (dispatch) {
     let categoryBooks = [];
 
     try {
-        const categoryId = await bookService.getCategoryId(category);
+        const categoryIdResponse = await bookService.getCategoryId(category);
+
+        if(categoryIdResponse["error"]) {
+            return dispatch(displayNotification(categoryIdResponse["msg"], 2))
+        }
 
         categoryBooks = books.filter(book =>
-            book["category"] === categoryId
+            book["category"] === categoryIdResponse["category"]["_id"]
         );
 
         if (categoryBooks.length <= 0) {
-            categoryBooks = await bookService.loadCategoryBooks(categoryId)
+            const categoryBooksResponse = await bookService.loadCategoryBooks(categoryIdResponse["category"]["_id"]);
+
+            if(categoryBooksResponse["error"]) {
+                return dispatch(displayNotification(categoryBooksResponse["msg"], 2))
+            }
+
+            categoryBooks = categoryBooksResponse["books"]
         }
     } catch (e) {
         dispatch(displayNotification("Invalid category!", 2));

@@ -16,26 +16,22 @@ class CategoryDal {
         return this.categoryModel.find();
     }
 
-    async getCategory(category) {
-        return this.categoryModel.findOne({_id: category});
+    async getCategory(categoryId) {
+        return this.categoryModel.findOne({_id: categoryId});
     }
 
     async getCategoryByName(categoryTitle) {
         return this.categoryModel.findOne({title: categoryTitle});
     }
 
-    async getCategoryById(categoryId) {
-        return this.categoryModel.findOne({_id: categoryId});
-    }
-
     async getCategoryId(category) {
-        let foundCategory = await this.categoryModel.findOne({title: category});
+        let foundCategory = await this.categoryModel.findOne({title: category}).select("_id");
 
         if(foundCategory === null) {
-           foundCategory = await this.categoryModel.findOne({_id: category});
+           foundCategory = await this.categoryModel.findOne({_id: category}).select("_id");
         }
 
-        return foundCategory
+        return foundCategory;
     }
 
     async getDefaultCategory() {
@@ -49,7 +45,9 @@ class CategoryDal {
     }
 
     async removeCategory(categoryId) {
-        return this.categoryModel.deleteOne({_id: categoryId});
+        const categoryTitle = await this.categoryModel.findOne({_id: categoryId}).select("title");
+        await this.categoryModel.deleteOne({_id: categoryId});
+        return categoryTitle;
     }
 }
 

@@ -97,7 +97,7 @@ app.use('/api/users', userPaths);
 const categoryRoutes = require('./src/Routes/CategoryRoutes')(bookService);
 app.use('/api/categories', tokenValidator({secret: securitySecret}).unless({path: openPaths}), categoryRoutes);
 
-app.put('/api/categories/:id', tokenValidator({secret: securitySecret}), async function deleteCategory(req, res) {
+app.delete('/api/categories/:id', tokenValidator({secret: securitySecret}), async function(req, res) {
     if(!req.user["admin"]) {
         res.status(401).json({msg: `User is unauthorized!`, error: 1});
     }
@@ -128,6 +128,6 @@ database.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: t
             console.log(`'${appName}' now listening on port: ${port}`);
         }
     ).catch((error) => {
-        console.log(`An error happened with following message: ${error}`)
+        console.log(`An error happened while starting the webserver!`, error)
     }
 );

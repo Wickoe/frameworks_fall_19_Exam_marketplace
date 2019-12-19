@@ -20,7 +20,23 @@ export default class FetchService {
     async postUser(userCredentials) {
         const postUserApi = process.env.REACT_APP_USER_API;
 
-        return this.fetch(postUserApi, "", 'POST', userCredentials);
+        const webResponse = await this.fetch(postUserApi, "", 'POST', userCredentials);
+
+        delete webResponse["data"];
+
+        return webResponse;
+    }
+
+    async getUserByUsername(username) {
+        const userApi = process.env.REACT_APP_USER_API,
+            pathArgument = `username/${username}`;
+
+        const webResponse = await this.fetch(userApi, pathArgument);
+
+        webResponse["user"] = webResponse["data"]["data"];
+        delete webResponse["data"];
+
+        return webResponse;
     }
 
     async authenticateUser(userCredentials) {
@@ -45,7 +61,6 @@ export default class FetchService {
         const webResponse = await this.fetch(postCategoryApi, "", 'POST', category, authService.authHeader());
 
         webResponse["category"] = webResponse["data"]["data"];
-        // TODO - if anything is needed while 'actual' web response is still accessible
 
         delete webResponse["data"];
 
@@ -57,7 +72,7 @@ export default class FetchService {
 
         const webResponse = await this.fetch(fetchCategories);
 
-        webResponse["categories"] = webResponse["data"]["categories"];
+        webResponse["categories"] = webResponse["data"]["data"];
 
         delete webResponse["data"];
 
@@ -70,28 +85,7 @@ export default class FetchService {
 
         const webResponse = await this.fetch(fetchCategoryBooks, pathArgument);
 
-        if(webResponse["error"]) {
-            return [];
-        }
-
-        return webResponse["data"];
-    }
-
-    async postBook(book) {
-        const postBookApi = process.env.REACT_APP_BOOK_API;
-        const authHeader = new AuthenticationService().authHeader();
-
-        const webResponse = await this.fetch(postBookApi, "", 'POST', book, authHeader);
-
-        if(webResponse["error"]) {
-            return webResponse;
-        }
-
-        if(webResponse["status"] === 401) {
-            return {error: 2, msg: "Please login in order to post a book for sale!"}
-        }
-
-        webResponse["book"] = webResponse["data"];
+        webResponse["books"] = webResponse["data"]["data"];
         delete webResponse["data"];
 
         return webResponse;
@@ -102,11 +96,10 @@ export default class FetchService {
 
         const webResponse = await this.fetch(getCategoryId, "", 'POST', {category: category});
 
-        if(webResponse["error"]) {
-            return webResponse;
-        }
+        webResponse["category"] = webResponse["data"]["data"];
+        delete webResponse["data"];
 
-        return webResponse["data"];
+        return webResponse;
     }
 
     async getCategory(categoryId) {
@@ -114,11 +107,27 @@ export default class FetchService {
 
         const webResponse = await this.fetch(categoryApi, categoryId);
 
-        if(webResponse["error"]) {
-            return {msg: webResponse["msg"], error: webResponse["error"], category: {}};
-        }
-
         webResponse["category"] = webResponse["data"]["data"];
+        delete webResponse["data"];
+
+        return webResponse;
+    }
+
+    async removeCategory(categoryId) {
+        const categoryApi = process.env.REACT_APP_CATEGORY_API;
+
+        const authHeader = (new AuthenticationService()).authHeader();
+
+        return await this.fetch(categoryApi, categoryId, 'DELETE', {}, authHeader);
+    }
+
+    async postBook(book) {
+        const postBookApi = process.env.REACT_APP_BOOK_API;
+        const authHeader = new AuthenticationService().authHeader();
+
+        const webResponse = await this.fetch(postBookApi, "", 'POST', book, authHeader);
+
+        webResponse["book"] = webResponse["data"]["data"];
         delete webResponse["data"];
 
         return webResponse;
@@ -138,9 +147,8 @@ export default class FetchService {
 
     async getBook(bookId) {
         const bookApi = process.env.REACT_APP_BOOK_API;
-        const pathArgument = `${bookId}`;
 
-        const webResponse = await this.fetch(bookApi, pathArgument);
+        const webResponse = await this.fetch(bookApi, bookId);
 
         webResponse["book"] = webResponse["data"]["data"];
         delete webResponse["data"];
@@ -154,30 +162,6 @@ export default class FetchService {
         const webResponse = await this.fetch(userApi, sellerId);
 
         webResponse["seller"] =  webResponse["data"]["data"];
-        delete webResponse["data"];
-
-        return webResponse;
-    }
-
-    async removeCategory(categoryId) {
-        const categoryApi = process.env.REACT_APP_CATEGORY_API;
-
-        const authHeader = (new AuthenticationService()).authHeader();
-
-        try {
-            return await this.fetch(categoryApi, categoryId, 'PUT', {}, authHeader);
-        } catch (e) {
-            return {msg: e.message, error: 1}
-        }
-    }
-
-    async getUserByUsername(username) {
-        const userApi = process.env.REACT_APP_USER_API,
-            pathArgument = `username/${username}`;
-
-        const webResponse = await this.fetch(userApi, pathArgument);
-
-        webResponse["user"] = webResponse["data"]["data"];
         delete webResponse["data"];
 
         return webResponse;

@@ -11,22 +11,22 @@ class BookDal {
         this.bookModel = database.model("Book", bookSchema);
     }
 
+    async getBook(id) {
+        return this.bookModel.findOne({_id: id});
+    }
+
     async getBooks() {
         return this.bookModel.find();
     }
 
-    async getBook(id) {
-        return this.bookModel.findOne({_id: id});
+    async getCategoryBooks(categoryId) {
+        return this.bookModel.find({category: categoryId});
     }
 
     async saveBook(book) {
         const bookModel = this.bookModel(book);
 
         return bookModel.save();
-    }
-
-    async getCategoryBooks(categoryId) {
-        return this.bookModel.find({category: categoryId});
     }
 
     async updateBookCategory(bookId, category) {

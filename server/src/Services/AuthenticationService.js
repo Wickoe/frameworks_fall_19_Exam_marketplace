@@ -5,8 +5,8 @@ class AuthenticationService {
         this.encryption = encryptionAlgorithm;
         this.tokenAlgorithm = tokenAlgorithm;
         this.encryptionLevel = encryptionLevel;
-        this.minPasswordLength = (process.env.MINIMUM_PASSWORD_LENGTH || 8);
-        this.tokenExpirationLength = {expiresIn: `${(process.env.TOKEN_LIFE || "1h")}`}
+        this.tokenExpirationLength = {expiresIn: `${(process.env.TOKEN_LIFE || "1h")}`};
+        this.passwordValidationRegex = new RegExp(`^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{${process.env.MINIMUM_PASSWORD_LENGTH || 8},})`);
     }
 
     async encryptAccount(accountInformation) {
@@ -14,7 +14,7 @@ class AuthenticationService {
             return this.errorOccurred("An error occurred! Please try again later");
         }
 
-        const hashedPassword = await this.encryptPassword(accountInformation["password"]);
+        const hashedPassword = await this.encryption.hash(accountInformation["password"], this.encryptionLevel);
         delete accountInformation["password"];
 
         return {...accountInformation, password: hashedPassword};
@@ -25,21 +25,23 @@ class AuthenticationService {
     }
 
     async validateUsername(username) {
-        return await this.userDal.findUserByUserName(username) === null;
+        let valid = username !== undefined && username.length > 0;
+
+        if(valid) {
+            const user = await this.userDal.getUserByUsername(username);
+
+            valid = user === null;
+        }
+
+        return valid;
     }
 
     validatePassword(password) {
-        const passwordValidationRegex = new RegExp(`^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{${this.minPasswordLength},})`);
-
-        return String(password).length >= this.minPasswordLength && passwordValidationRegex.test(password)
+        return this.passwordValidationRegex.test(password);
     }
 
     errorOccurred(msg) {
         return {msg: msg, error: 1}
-    }
-
-    async encryptPassword(password) {
-        return await this.encryption.hash(password, this.encryptionLevel);
     }
 
     async authenticate(userCredentials) {

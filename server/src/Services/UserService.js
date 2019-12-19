@@ -4,37 +4,25 @@ class UserService {
     }
 
     async getUsers() {
-        const response = {msg: "Users"};
-
         try {
-            response["data"] = await this.userDal.getPublicUsers();
+            let users = await this.userDal.getUsers();
+
+            if(!users) {
+                users = [];
+            }
+
+            return {msg: "Users", data: users};
         } catch (e) {
-            response["error"] = 1;
-            response["msg"] = "Completed with errors!";
-        }
-
-        return response;
-    }
-
-    validateInformation(userInformation) {
-        //TODO - implement a more thorough user validation as the user schema evolves
-        try {
-            const username = userInformation["username"],
-                password = userInformation["password"],
-                admin = userInformation["admin"];
-
-            return username.length > 0 && password.length >= 8 && (admin === true || admin === false)
-        }catch (e) {
-            return false;
+            return {msg: "Something went wrong while loading the users. Please try again later!", error: 1}
         }
     }
 
     async createUser(userInformation) {
-        if (!this.validateInformation(userInformation)) {
+        const userInformationValidationResponse = await this.validateUserInformation(userInformation);
+
+        if (userInformationValidationResponse["error"]) {
             return {error: 1, msg: "Missing user information!"};
         }
-
-        // TODO - check if user already exists
 
         try {
             await this.userDal.saveUser(userInformation);
@@ -45,8 +33,27 @@ class UserService {
         }
     }
 
-    async getUser(id) {
-        return await this.userDal.getUser(id);
+    async validateUserInformation(userInformation) {
+        try {
+            const username = userInformation["username"],
+                password = userInformation["password"],
+                admin = userInformation["admin"];
+
+            const existingUser = await this.userDal.getUserByUsername(username);
+
+            if(existingUser === null && username.length > 0 && password.length >= 8 && (admin === true || admin === false)){
+                return {msg: "Valid userinformation!", error: 0}
+            }
+
+            return {msg: "Missing user information!"}
+        }catch (e) {
+            return {msg: "Something went wrong creating the user account. Please try again later!", error: 1}
+        }
+    }
+
+    async getUser(userId) {
+        const user = await this.userDal.getUser(userId);
+        return {msg: `User ${userId}`, data: user};
     }
 
     async getUserByUsername(username) {

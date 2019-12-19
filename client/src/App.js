@@ -70,16 +70,16 @@ class App extends Component {
                 </div>
                 <Router>
                     <Categories path={"/"} categories={this.props.categories}
-                                loadCategoryBooks={(categoryId) => this.props.loadCategoryBooks(categoryId, this.props["books"]["books"])}/>
+                                loadCategoryBooks={(categoryId) => this.props.loadCategoryBooks(categoryId, this.props["categories"]["books"])}/>
 
-                    <Category path={`/category/:category`} books={this.props["books"]["categoryBooks"]}
-                              loadBook={(bookId) => this.props.loadBook(bookId, this.props["books"]["books"])}
-                              loadCategoryBooks={(category) => this.props.loadCategoryBooks(category, this.props["books"]["books"])}/>
+                    <Category path={`/category/:category`} books={this.props["categories"]["categoryBooks"]}
+                              loadBook={(bookId) => this.props.loadBook(bookId, this.props["categories"]["books"])}
+                              loadCategoryBooks={(category) => this.props.loadCategoryBooks(category, this.props["categories"]["books"])}/>
 
-                    <Book path={"/books/:bookId"} book={this.props["books"]["book"]}
-                          loadBook={(bookId) => this.props.loadBook(bookId, this.props["books"]["books"])}
-                          seller={this.props["books"]["bookSeller"]}
-                          category={this.props["books"]["bookCategory"]}/>
+                    <Book path={"/books/:bookId"} book={this.props["categories"]["book"]}
+                          loadBook={(bookId) => this.props.loadBook(bookId, this.props["categories"]["books"])}
+                          seller={this.props["categories"]["bookSeller"]}
+                          category={this.props["categories"]["bookCategory"]}/>
 
                     {this.authService.authenticatedUser() ?
                         <Redirect noThrow from={"/sign-in"} to={`/user/${this.authService.getUsername()}`}/>
@@ -119,8 +119,7 @@ class App extends Component {
 const mapStateToProps = state => ({
     categories: state.categories,
     user: state.user,
-    notification: state.notification,
-    books: state.books
+    notification: state.notification
 });
 
 const mapDispatchToProps = dispatch => ({

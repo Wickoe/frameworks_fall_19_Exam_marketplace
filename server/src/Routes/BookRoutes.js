@@ -13,10 +13,6 @@ module.exports = (bookService) => {
     async function getBooks(req, res) {
         const booksResponse = await bookService.getBooks();
 
-        if(booksResponse["error"]) {
-            res.status(501);
-        }
-
         return res.json(booksResponse);
     }
 
@@ -26,15 +22,6 @@ module.exports = (bookService) => {
 
         const postBookResponse = await bookService.postBook(newBook, user);
 
-        const responseError = postBookResponse["error"];
-
-        if(responseError) {
-            if (responseError === 1)
-                res.status(400);
-            else
-                res.status(501);
-        }
-
         return res.json(postBookResponse)
     }
 
@@ -42,12 +29,6 @@ module.exports = (bookService) => {
         const bookId = req.params.id;
 
         const bookResponse = await bookService.getBook(bookId);
-
-        const responseError = bookResponse["error"];
-
-        if(responseError) {
-            res.status(501);
-        }
 
         return res.json(bookResponse);
     }

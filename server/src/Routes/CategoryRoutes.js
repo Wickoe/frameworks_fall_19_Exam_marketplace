@@ -14,15 +14,10 @@ module.exports = (bookService) => {
 
     router.route('/:id')
         .get((req, res) => getCategory(req, res));
-        // .put((req, res) => deleteCategory(req, res));
 
     /* Functionality */
     async function getCategories(req, res) {
         const categoriesResponse = await bookService.getCategories();
-
-        if (categoriesResponse["error"]) {
-            categoriesResponse["categories"] = [];
-        }
 
         return res.json(categoriesResponse);
     }
@@ -31,10 +26,6 @@ module.exports = (bookService) => {
         const category = req.body;
 
         const response = await bookService.saveCategory(category);
-
-        if (response["error"]) {
-            res.status(500);
-        }
 
         return res.json(response);
     }
@@ -48,13 +39,11 @@ module.exports = (bookService) => {
     }
 
     async function getCategoryId(req, res) {
-        const categoryIdResponse = await bookService.getCategoryId(req.body);
+        const category = req.body;
 
-        if (categoryIdResponse["error"]) {
-            return res.json(categoryIdResponse);
-        }
+        const categoryIdResponse = await bookService.getCategoryId(category);
 
-        return res.json({msg: "Category id", data: categoryIdResponse})
+        return res.json(categoryIdResponse);
     }
 
     async function getCategory(req, res) {
@@ -64,18 +53,6 @@ module.exports = (bookService) => {
 
         return res.json(categoryResponse);
     }
-
-    // async function deleteCategory(req, res) {
-    //     if(!req.user["admin"]) {
-    //         res.status(401).json({msg: `User is unauthorized!`, error: 1});
-    //     }
-    //
-    //     const categoryId = req.params["id"];
-    //
-    //     const removeCategoryResponse = await bookService.removeCategory(categoryId);
-    //
-    //     return res.json(removeCategoryResponse);
-    // }
 
     return router;
 };

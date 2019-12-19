@@ -1,9 +1,5 @@
 [
   {
-    "url": "/",
-    "method": "GET"
-  },
-  {
     "url": "/api/users",
     "method": "POST"
   },
@@ -20,19 +16,19 @@
     "method": "POST"
   },
   {
-    "url": "/api/categories/",
-    "method": "POST"
-  },
-  {
-    "url": "/api/categories",
-    "method": "POST"
-  },
-  {
     "url": "/api/categories/categoryId",
     "method": "POST"
   },
   {
     "url": "/api/categories/categoryId/",
     "method": "POST"
+  },
+  {
+    "url": "/api/categories",
+    "method": "GET"
+  },
+  {
+    "url": "/api/categories/",
+    "method": "GET"
   }
 ]
