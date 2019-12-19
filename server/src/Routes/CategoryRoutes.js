@@ -13,8 +13,8 @@ module.exports = (bookService) => {
         .post((req, res) => getCategoryId(req, res));
 
     router.route('/:id')
-        .get((req, res) => getCategory(req, res))
-        .put((req, res) => deleteCategory(req, res));
+        .get((req, res) => getCategory(req, res));
+        // .put((req, res) => deleteCategory(req, res));
 
     /* Functionality */
     async function getCategories(req, res) {
