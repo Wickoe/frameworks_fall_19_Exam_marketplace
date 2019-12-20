@@ -44,7 +44,7 @@ export default class BookService {
             return validBookInformation;
         }
 
-        return (await this.fetcher.postBook(book))["book"];
+        return (await this.fetcher.postBook(book));
     }
 
     validateBookInformation(bookInformation) {
@@ -117,5 +117,25 @@ export default class BookService {
 
     isDefaultCategory(category) {
         return category["title"] === process.env.REACT_APP_DEFAULT_CATEGORY;
+    }
+
+    async getBook(bookId) {
+        const bookResponse = await this.fetcher.getBook(bookId);
+
+        if(bookResponse["error"]) {
+            return {};
+        }
+
+        return bookResponse["book"];
+    }
+
+    async getCategory(categoryId) {
+        const categoryResponse = await this.fetcher.getCategory(categoryId);
+
+        if(categoryResponse["error"]) {
+            return null;
+        }
+
+        return categoryResponse["category"];
     }
 }

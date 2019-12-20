@@ -36,6 +36,32 @@ class BookDal {
 
         return await book.save();
     }
+
+    async bootstrapBooks(categoryDal, userDal, count = 10) {
+        let l = (await this.getBooks()).length;
+
+        if (l === 0) {
+            let promises = [];
+
+            const categories = await categoryDal.getCategories();
+            const krdo = await userDal.getUserByUsername("krdo");
+
+            categories.forEach(category => {
+                for (let i = 0; i < count; i++) {
+                    let question = new this.bookModel({
+                        title: `How does this work?${i}`,
+                        author: "Kristian",
+                        category: category["_id"],
+                        price: (i + 1),
+                        seller: krdo["_id"]
+                    });
+                    promises.push(question.save());
+                }
+            });
+
+            return Promise.all(promises);
+        }
+    }
 }
 
 module.exports = (database) => new BookDal(database);

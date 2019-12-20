@@ -8,13 +8,14 @@ export default class Category extends Component {
 
     render() {
         return (
-            <div>
-                <h1>Category books:</h1>
+            <div className={"container"}>
+                <Link to={'/'} className={"button"}>Back</Link>
+                <h1 className={"title is-1"}>Category books:</h1>
                 <ul>
                     {this.props["books"].map(book => {
                         return (
-                            <li key={book["_id"]}>
-                                <Link to={`/books/${book["_id"]}`} onClick={() => this.props.loadBook(book["_id"])}>{book["title"]}</Link>
+                            <li key={book["_id"]} >
+                                <Link to={`/books/${book["_id"]}`} className={"list-item"} onClick={() => this.props.loadBook(book["_id"])}>{book["title"]}</Link>
                             </li>
                         );
                     })}

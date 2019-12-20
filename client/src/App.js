@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Link, Redirect, Router} from "@reach/router";
 import {connect} from 'react-redux'
+import io from 'socket.io-client';
 
 import {
     createUserAction,
@@ -15,7 +16,7 @@ import {
     postCategory,
     postBook,
     loadBook,
-    removeCategoryAction
+    removeCategoryAction, handleMsg
 } from "./Actions/BookActions";
 
 import Categories from "./Components/Categories";
@@ -27,7 +28,7 @@ import User from "./Components/User";
 import Admin from "./Components/Admin";
 import Category from "./Components/Category";
 import Book from "./Components/Book";
-
+import {UserHeader} from "./Components/UserHeader";
 
 class App extends Component {
     constructor(props) {
@@ -42,6 +43,12 @@ class App extends Component {
         }
 
         this.props.loadCategories();
+
+        const socket = io(process.env.REACT_APP_SOCKET_URL);
+
+        socket.on('connect', () => {console.log("Connected to socket.io!");socket.emit('hello', "Kristian", "howdy");});
+
+        socket.on('new-data', (msg) => {this.props.handleData(msg)});
     }
 
     render() {
@@ -49,25 +56,24 @@ class App extends Component {
 
         return (
             <React.Fragment>
-                <Link to={`/user/${this.authService.getUsername()}`}>User page</Link>
+
                 {this.props.notification["display"] &&
                 <div>
                     <h1> {this.props.notification["msg"]}</h1>
                 </div>
                 }
-                <div>
-                    <Link to={"/post-book-for-sale"}>Submit book to sell</Link>
-                    {this.props.user["token"] !== undefined && this.props.user["token"].length > 0 ?
-                        <div>
-                            <button onClick={this.props.logoutUser}>Logout</button>
+
+                <section className="hero is-primary">
+                    <div className="hero-body">
+                        <div className="container">
+                            <Link to="/"><h1 className="title is-2">Categories of books!</h1></Link>
                         </div>
-                        :
-                        <div>
-                            <Link to={"/sign-in"}>Sign in</Link>
-                            <Link to={"/sign-up"}>Sign up</Link>
-                        </div>
-                    }
-                </div>
+                    </div>
+                </section>
+
+                <UserHeader username={this.props["user"]["username"]} logout={this.props.logoutUser}/>
+
+
                 <Router>
                     <Categories path={"/"} categories={this.props.categories}
                                 loadCategoryBooks={(categoryId) => this.props.loadCategoryBooks(categoryId, this.props["categories"]["books"])}/>
@@ -111,6 +117,16 @@ class App extends Component {
                         <Redirect noThrow from={"/admin"} to={"/"}/>
                     }
                 </Router>
+
+                <footer className={"footer"}>
+                    <div className={"container"}>
+                        <div className={"content has-text-centered"}>
+                            <p>
+                                <strong>Bookshop markedplace</strong> by Martin
+                            </p>
+                        </div>
+                    </div>
+                </footer>
             </React.Fragment>
         )
     }
@@ -133,7 +149,8 @@ const mapDispatchToProps = dispatch => ({
     postBook: book => dispatch(postBook(book)),
     loadBook: (bookId, books) => dispatch(loadBook(bookId, books)),
     removeCategory: (category) => dispatch(removeCategoryAction(category)),
-    loadUser: username => dispatch(loadUserByUsername(username))
+    loadUser: username => dispatch(loadUserByUsername(username)),
+    handleData: socketMsg => dispatch(handleMsg(socketMsg))
 });
 
 export default connect(

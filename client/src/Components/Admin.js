@@ -3,29 +3,29 @@ import React, {Component} from 'react';
 export default class Admin extends Component {
     render() {
         return (
-            <div>
+            <div className={"component"}>
                 <div>
-                    <h1>Create category:</h1>
+                    <h1 className={"title is-2"}>Create category:</h1>
                     <form>
-                        <label>Category name: <input name={"categoryTitle"} typeof={"text"}
+                        <label className={"label"}>Category name: <input name={"categoryTitle"} typeof={"text"}
                                                      onChange={(event) => this.onInputValueChange(event)}/></label>
-                        <input type={"submit"} value={"Submit"}
+                        <input className={"button "} type={"submit"} value={"Submit"}
                                onClick={(event) => this.onSubmitInputValueClicked(event)}/>
                     </form>
                 </div>
-                <h1>Categories:</h1>
-                <ul>
+                <h1 className={"title is-2"}>Categories:</h1>
+                <ol>
                     {this.props["categories"].map(category => {
-                        return <li key={category["_id"]}>
-                            <div>
-                                <label>{category["title"]}</label>
+                        return <li className={"list-item"} key={category["_id"]}>
+                            <div className={"container"}>
+                                <label className={"label"}>{category["title"]}</label>
                                 <button onClick={(event) => this.onDeleteCategoryClicked(event, category)}>Remove
                                     category
                                 </button>
                             </div>
                         </li>
                     })}
-                </ul>
+                </ol>
             </div>
         )
     }

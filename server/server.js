@@ -121,6 +121,10 @@ database.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: t
     .then(async () => {
             console.log(`Connected to database!`);
 
+            await userDal.bootstrapTestUsers();
+            await categoryDal.bootstrapCategories();
+            await bookDal.bootstrapBooks(categoryDal, userDal);
+
             const server = await app.listen(port);
             socket.setup(server);
 

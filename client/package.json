@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "@reach/router": "^1.2.1",
+    "bulma": "^0.8.0",
+    "node-sass": "^4.13.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-redux": "^7.1.3",

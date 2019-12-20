@@ -18,7 +18,21 @@ export function categories(state = {
 
             return newState;
         case 'UPDATE_CATEGORIES':
-            newState["categories"] = action["categories"];
+            // newState["categories"] = action["categories"];
+
+            action["categories"].forEach(category => {
+                let index = 0;
+                let found = false;
+
+                while(!found && index < newState["categories"].length) {
+                    found = category["_id"] === newState["categories"][index];
+
+                    index++;
+                }
+
+                if(!found)
+                    newState["categories"].push(category);
+            });
 
             return newState;
         case 'UPDATE_BOOK':
@@ -60,7 +74,7 @@ export function categories(state = {
             let defaultCategory;
 
             newState["categories"].forEach((category, index) => {
-                if (category["title"] === action["category"] ["title"] && category["_id"] === action["category"]["_id"]) {
+                if (category["title"] === action["category"]["title"] && category["_id"] === action["category"]["_id"]) {
                     newState["categories"].splice(index, 1);
                 }
 

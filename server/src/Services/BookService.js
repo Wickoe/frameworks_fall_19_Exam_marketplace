@@ -56,7 +56,7 @@ class BookService {
 
             book["category"] = category["_id"];
 
-            return title.length > 0 && author.length > 0 && category !== undefined && book["category"].length > 0 && price > 0.0;
+            return title.length > 0 && author.length > 0 && category !== undefined && book["category"].length !== null && price > 0.0;
         } catch (e) {
             return false;
         }
@@ -70,7 +70,7 @@ class BookService {
         try {
             const newCategory = await this.categoryDal.saveCategory(category);
 
-            // socket.emitNewCategoryAdded(newCategory["title"], newCategory["_id"]);
+            this.socket.emitNewCategoryAdded(newCategory["title"], newCategory["_id"]);
 
             return {data: newCategory, msg: `Category '${category["title"]}' created!`};
         } catch (e) {
@@ -166,4 +166,4 @@ class BookService {
     }
 }
 
-module.exports = (bookDal, categoryDal) => new BookService(bookDal, categoryDal);
+module.exports = (bookDal, categoryDal, socket) => new BookService(bookDal, categoryDal, socket);

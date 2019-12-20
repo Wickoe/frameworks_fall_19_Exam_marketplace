@@ -115,12 +115,12 @@ const loadCategoryBooks = (category, books) => async function (dispatch) {
 const postBook = book => async function (dispatch) {
     const postBookResponse = await bookService.postBook(book);
 
-    // TODO
     if (!postBookResponse["error"]) {
-        dispatch(updateBooks([postBookResponse["data"]]));
+        dispatch(updateBooks([postBookResponse["book"]]));
     }
 
     dispatch(displayNotification(postBookResponse["msg"], 1));
+    navigate('/')
 };
 
 const loadBook = (bookId, books) => async function (dispatch) {
@@ -137,7 +137,7 @@ const loadBook = (bookId, books) => async function (dispatch) {
     const bookExists = await bookService.bookExists(book);
 
     if (bookExists) {
-        const seller = await bookService.getSeller(book["seller"]);
+        const seller = (await bookService.getSeller(book["seller"]))["data"];
         const bookCategory = await bookService.getBookCategory(book["category"]);
 
         dispatch(updateBookSeller(seller, bookCategory));
@@ -149,4 +149,26 @@ const loadBook = (bookId, books) => async function (dispatch) {
     navigate('/');
 };
 
-export {postCategory, loadCategories, loadCategoryBooks, postBook, loadBook, removeCategoryAction}
+const handleMsg = msg => async function(dispatch) {
+    const data = [];
+
+    dispatch(displayNotification(msg["msg"]));
+
+    if(msg["dataType"] === "book") {
+        const newData = await bookService.getBook(msg["dataId"]);
+
+        if(newData !== null)
+            data.push(newData);
+
+        return dispatch(updateBooks())
+    } else if(msg["dataType"] === "category") {
+        const newData = await bookService.getCategory(msg["dataId"]);
+
+        if(newData !== null)
+            data.push(newData);
+
+        return dispatch(updateCategories(data));
+    }
+};
+
+export {postCategory, loadCategories, loadCategoryBooks, postBook, loadBook, removeCategoryAction, handleMsg}

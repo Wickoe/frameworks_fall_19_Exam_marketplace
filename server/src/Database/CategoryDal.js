@@ -49,6 +49,23 @@ class CategoryDal {
         await this.categoryModel.deleteOne({_id: categoryId});
         return categoryTitle;
     }
+
+    async bootstrapCategories(count= 10) {
+        let l = (await this.getCategories()).length;
+
+        if (l === 0) {
+            let promises = [];
+
+            for (let i = 0; i < count; i++) {
+                let question = new this.categoryModel({
+                    title: `How does this work?${i}`
+                });
+                promises.push(question.save());
+            }
+
+            return Promise.all(promises);
+        }
+    }
 }
 
 module.exports = database => new CategoryDal(database);

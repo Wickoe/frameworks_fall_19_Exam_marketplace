@@ -12,17 +12,17 @@ export default class User extends Component {
 
     render() {
         return (
-            <React.Fragment>
-                <Link to={"/"}>Back</Link>
-                <label>Username: <p>{this.props["user"]["user"]["username"]}</p></label>
-                <label>Name: <p>{this.props["user"]["user"]["name"]}</p></label>
+            <div className={"container"}>
+                <Link className={"button"} to={"/"}>Back</Link>
+                <label className={"label"}>Username: <p>{this.props["user"]["user"]["username"]}</p></label>
+                <label className={"label"}>Name: <p>{this.props["user"]["user"]["name"]}</p></label>
 
                 {this.authService.authenticatedUserPage(this.props["user"]["user"]) &&
                     <Admin categories={this.props["categories"]}
                            postCategory={(category) => this.props.postCategory(category)}
                            removeCategory={(category) => this.props.removeCategory(category)}/>
                 }
-            </React.Fragment>
+            </div>
         );
     }
 }

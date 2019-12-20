@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+
 class UserDal {
     constructor(database) {
         const userSchema = new database.Schema({
@@ -31,6 +33,29 @@ class UserDal {
 
     async getUserByUsername(username) {
         return this.userModel.findOne({username: username}).select("-password -admin");
+    }
+
+    async bootstrapTestUsers() {
+        let l = (await this.getUsers()).length;
+        if (l !== 0) return;
+
+        const users = [
+            { username: "krdo", password: '123', name: "kristian", admin: true, email: "superSecretEmail"},
+            { username: "tosk", password: 'password', name: "Mille", admin: false, email: "superSecretEmail"},
+            { username: "mvkh", password: 'l33th0xor', name: "Niels", admin: false, email: "superSecretEmail"},
+        ];
+
+        let promises = [];
+        users.forEach(user => {
+            bcrypt.hash(user.password, 10, (err, hash) => {
+                user.password = hash;
+
+                let newUser = new this.userModel(user);
+                promises.push(newUser.save());
+            });
+        });
+
+        return Promise.all(promises);
     }
 }
 

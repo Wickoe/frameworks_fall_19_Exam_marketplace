@@ -17,16 +17,12 @@ class SocketService {
         });
     }
 
-    postedData(msg, dataType, id) {
-        this.io.of('/my_app').emit('new-data', {msg: msg, dataType: dataType, id: id});
-    };
-
     emitNewBookAdded(bookTitle, bookId) {
-        this.io.of("/my_app").emit('new-data', {msg: `${bookTitle} has been added as a new book!`, action: 'UPDATE_BOOKS', categoryId: bookId})
+        this.io.of("/my_app").emit('new-data', {msg: `${bookTitle} has been added as a new book!`, action: 'UPDATE_BOOKS', dataId: bookId, dataType: "book"})
     }
 
     emitNewCategoryAdded(categoryTitle, categoryId) {
-        this.io.of("/my_app").emit('new-data', {msg: `${categoryTitle} has been added as a new category!`, action: 'UPDATE_BOOKS', categoryId: categoryId})
+        this.io.of("/my_app").emit('new-data', {msg: `${categoryTitle} has been added as a new category!`, action: 'UPDATE_CATEGORIES', dataId: categoryId, dataType: "category"})
     }
 }
 
