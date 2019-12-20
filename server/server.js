@@ -70,6 +70,14 @@ const openPaths = [...require('./src/Configuration/paths.json'),
         "url": /\/api\/users\/[\w]+\/username\/[w]+\//ig,
         "method": "GET"
     },
+    {
+        "url": /\/api\/categories\/caregoriId\/[w]+/ig,
+        "method": "POST"
+    },
+    {
+        "url": /\/api\/categories\/caregoriId\/[w]+\//ig,
+        "method": "POST"
+    },
     /^(?!\/api).*/gim,
 ];
 
