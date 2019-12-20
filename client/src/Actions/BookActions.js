@@ -160,7 +160,7 @@ const handleMsg = msg => async function(dispatch) {
         if(newData !== null)
             data.push(newData);
 
-        return dispatch(updateBooks())
+        return dispatch(updateBooks(data));
     } else if(msg["dataType"] === "category") {
         const newData = await bookService.getCategory(msg["dataId"]);
 
