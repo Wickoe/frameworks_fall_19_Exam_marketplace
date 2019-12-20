@@ -71,11 +71,11 @@ const openPaths = [...require('./src/Configuration/paths.json'),
         "method": "GET"
     },
     {
-        "url": /\/api\/categories\/caregoriId\/[w]+/ig,
+        "url": /\/api\/categories\/caregoriId\//ig,
         "method": "POST"
     },
     {
-        "url": /\/api\/categories\/caregoriId\/[w]+\//ig,
+        "url": /\/api\/categories\/caregoriId/ig,
         "method": "POST"
     },
     /^(?!\/api).*/gim,
