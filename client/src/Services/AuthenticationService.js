@@ -14,10 +14,6 @@ export default class AuthenticationService {
 
         const userCreationResponse = await this.fetcher.postUser(userCredentials);
 
-        if (userCreationResponse["error"]) {
-            return {error: 1, msg: "An error occurred while trying to create user account. Please try again later!"}
-        }
-
         return userCreationResponse;
     }
 

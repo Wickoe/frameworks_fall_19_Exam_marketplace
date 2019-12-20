@@ -10,7 +10,7 @@ export default class Category extends Component {
         return (
             <div className={"container"}>
                 <Link to={'/'} className={"button"}>Back</Link>
-                <h1 className={"title is-1"}>Category books:</h1>
+                <h1 className={"title is-1"}>Category '{this.props["category"]}' books:</h1>
                 <ul>
                     {this.props["books"].map(book => {
                         return (

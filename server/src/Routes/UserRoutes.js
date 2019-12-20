@@ -32,10 +32,12 @@ module.exports = (authService, userService) => {
         const encryptedUserAccount = await authService.encryptAccount(userInformation);
 
         if(encryptedUserAccount["error"]) {
-            return res.status(500).json(encryptedUserAccount);
+            return res.json(encryptedUserAccount);
         }
 
-        return res.json(await userService.createUser(encryptedUserAccount));
+        const createUserResponse = await userService.createUser(encryptedUserAccount);
+
+        return res.json(createUserResponse);
     }
 
     async function getUser(req, res) {

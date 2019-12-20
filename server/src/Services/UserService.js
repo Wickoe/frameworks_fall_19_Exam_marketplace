@@ -21,7 +21,7 @@ class UserService {
         const userInformationValidationResponse = await this.validateUserInformation(userInformation);
 
         if (userInformationValidationResponse["error"]) {
-            return {error: 1, msg: "Missing user information!"};
+            return {error: 1, msg: "Try and log in instead!"};
         }
 
         try {
@@ -45,7 +45,7 @@ class UserService {
                 return {msg: "Valid userinformation!", error: 0}
             }
 
-            return {msg: "Missing user information!"}
+            return {msg: "Missing user information!", error: 1}
         }catch (e) {
             return {msg: "Something went wrong creating the user account. Please try again later!", error: 1}
         }
