@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 export default class Admin extends Component {
     render() {
         return (
-            <div className={"component"}>
+            <div className={"container"}>
                 <div>
                     <h1 className={"title is-2"}>Create category:</h1>
                     <form>

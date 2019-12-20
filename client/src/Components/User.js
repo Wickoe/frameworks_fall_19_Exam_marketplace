@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import AuthenticationService from "../Services/AuthenticationService";
-import Admin from "./Admin";
 import {Link} from "@reach/router";
 
 export default class User extends Component {
@@ -18,9 +17,7 @@ export default class User extends Component {
                 <label className={"label"}>Name: <p>{this.props["user"]["user"]["name"]}</p></label>
 
                 {this.authService.authenticatedUserPage(this.props["user"]["user"]) &&
-                    <Admin categories={this.props["categories"]}
-                           postCategory={(category) => this.props.postCategory(category)}
-                           removeCategory={(category) => this.props.removeCategory(category)}/>
+                    <Link className={"button"} to={"/admin"}>Admin</Link>
                 }
             </div>
         );

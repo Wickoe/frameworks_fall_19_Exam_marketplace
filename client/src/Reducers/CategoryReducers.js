@@ -10,22 +10,27 @@ export function categories(state = {
 
     switch (action["type"]) {
         case 'UPDATE_CATEGORY':
-            if (!newState["categories"].includes(category => {
-                return category["title"] === action["category"]["title"];
-            })) {
+            let index = 0,
+                found = false;
+
+            while(!found && index < newState["categories"].length) {
+                found = action["category"]["_id"] === newState["categories"][index]["_id"];
+
+                index++;
+            }
+
+            if(!found) {
                 newState["categories"].push(action["category"]);
             }
 
             return newState;
         case 'UPDATE_CATEGORIES':
-            // newState["categories"] = action["categories"];
-
-            action["categories"].forEach(category => {
+             action["categories"].forEach(category => {
                 let index = 0;
                 let found = false;
 
                 while(!found && index < newState["categories"].length) {
-                    found = category["_id"] === newState["categories"][index];
+                    found = category["_id"] === newState["categories"][index]["_id"];
 
                     index++;
                 }
@@ -74,7 +79,7 @@ export function categories(state = {
             let defaultCategory;
 
             newState["categories"].forEach((category, index) => {
-                if (category["title"] === action["category"]["title"] && category["_id"] === action["category"]["_id"]) {
+                if (category["_id"] === action["category"]["_id"]) {
                     newState["categories"].splice(index, 1);
                 }
 
@@ -84,7 +89,7 @@ export function categories(state = {
             });
 
             newState["books"].forEach(book => {
-                if (book["category"] === action["category"]["_id"]) {
+                if (book["category"] === action["category"]) {
                     book["category"] = defaultCategory;
                 }
             });

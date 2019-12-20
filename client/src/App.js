@@ -46,7 +46,7 @@ class App extends Component {
 
         const socket = io(process.env.REACT_APP_SOCKET_URL);
 
-        socket.on('connect', () => {console.log("Connected to socket.io!");socket.emit('hello', "Kristian", "howdy");});
+        socket.on('connect', () => {console.log("Connected to socket.io!")});
 
         socket.on('new-data', (msg) => {this.props.handleData(msg)});
     }

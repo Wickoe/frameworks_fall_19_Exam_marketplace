@@ -168,6 +168,9 @@ const handleMsg = msg => async function(dispatch) {
             data.push(newData);
 
         return dispatch(updateCategories(data));
+    } else if(msg["action"] === "REMOVE_CATEGORY") {
+        console.log("Im called!");
+        dispatch({type: msg["action"], category: {_id: msg["dataId"]}})
     }
 };
 

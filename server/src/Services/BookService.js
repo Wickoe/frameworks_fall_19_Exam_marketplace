@@ -132,6 +132,7 @@ class BookService {
         }
 
         if(!(await this.validateCategory(categoryId))) {
+            this.socket.emitCategoryRemoved(categoryId);
             return {msg: "Category removed"};
         }
 
@@ -145,7 +146,7 @@ class BookService {
 
             const category = await this.categoryDal.removeCategory(categoryId);
 
-            // this.socket.emitCategoryRemoval(category["_title"], categoryId);
+            this.socket.emitCategoryRemoved(categoryId);
 
             return {msg: `Category '${category["title"]}' removed!`}
         } catch (e) {

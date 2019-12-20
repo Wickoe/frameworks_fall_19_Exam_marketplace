@@ -23,6 +23,7 @@ export class UserHeader extends Component {
         return (
             <div className="container is-widescreen">
                 <div className="notification">
+                    <div className={"container"}><Link to={"/"} className={"btnText"}>Back</Link></div>
                     {writeLoginStatus()}
                     <Link to={"/post-book-for-sale"}>Submit book to sell</Link>
                 </div>

@@ -109,6 +109,17 @@ app.delete('/api/categories/:id', tokenValidator({secret: securitySecret}), asyn
     return res.json(removeCategoryResponse);
 });
 
+app.post('/api/categories', tokenValidator({secret: securitySecret}), async function(req, res) {
+    if(!req.user.admin)
+        res.status(401).json({msg: "Unauthorized!", error: 1});
+
+    const category = req.body;
+
+    const response = await bookService.saveCategory(category);
+
+    return res.json(response);
+});
+
 const bookRoutes = require('./src/Routes/BookRoutes')(bookService);
 app.use('/api/books', tokenValidator({secret: securitySecret}).unless({path: openPaths}), bookRoutes);
 

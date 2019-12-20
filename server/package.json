@@ -20,7 +20,5 @@
     "jsonwebtoken": "^8.5.1",
     "socket.io": "^2.3.0"
   },
-  "devDependencies": {
-
-  }
+  "devDependencies": {}
 }

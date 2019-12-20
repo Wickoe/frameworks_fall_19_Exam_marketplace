@@ -24,6 +24,10 @@ class SocketService {
     emitNewCategoryAdded(categoryTitle, categoryId) {
         this.io.of("/my_app").emit('new-data', {msg: `${categoryTitle} has been added as a new category!`, action: 'UPDATE_CATEGORIES', dataId: categoryId, dataType: "category"})
     }
+
+    emitCategoryRemoved(categoryId) {
+        this.io.of("/my_app").emit('new-data', {msg: `${categoryId} has been removed!`, dataId: categoryId, action: "REMOVE_CATEGORY"})
+    }
 }
 
 module.exports = () => new SocketService();

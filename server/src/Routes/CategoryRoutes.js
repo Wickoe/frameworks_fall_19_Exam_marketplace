@@ -3,8 +3,7 @@ module.exports = (bookService) => {
 
     /* Routes */
     router.route('/')
-        .get((req, res) => getCategories(req, res))
-        .post((req, res) => postCategory(req, res));
+        .get((req, res) => getCategories(req, res));
 
     router.route('/:id/books')
         .get((req, res) => getCategoryBooks(req, res));
@@ -20,14 +19,6 @@ module.exports = (bookService) => {
         const categoriesResponse = await bookService.getCategories();
 
         return res.json(categoriesResponse);
-    }
-
-    async function postCategory(req, res) {
-        const category = req.body;
-
-        const response = await bookService.saveCategory(category);
-
-        return res.json(response);
     }
 
     async function getCategoryBooks(req, res) {
